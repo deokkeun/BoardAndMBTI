@@ -279,20 +279,20 @@ public class BoardController {
 					System.out.println("boardType0::"+boardType0);
 					System.out.println("selectNumber::"+selectNumber);
 					if(selectNumber >= 0) { // E, N, F, J 빠른 알파벳 < I, S, T, P 느린 알파벳(느린 알파벳쪽 점수 추가)
-						System.out.println("selectNumberABS[type=EI(I)]::"+Math.abs(selectNumber));
+						System.out.println("selectNumberABS[type=" + startWord + "(" + slowWord + ")]::"+Math.abs(selectNumber));
 						endTypeSum += Math.abs(selectNumber);
 					} else { // E, N, F, J 빠른 알파벳 > I, S, T, P 느린 알파벳(빠른 알파벳쪽 점수 추가)
-						System.out.println("selectNumberABS[type=EI(E)]::"+Math.abs(selectNumber));
+						System.out.println("selectNumberABS[type=" + startWord + "(" + fastWord + ")]::"+Math.abs(selectNumber));
 						startTypeSum += Math.abs(selectNumber);
 					}
 				} else if(boardType0.equals(endWord)) { // IE, SN, TF, PJ 반대 유형
 					System.out.println("boardType0::"+boardType0);
 					System.out.println("selectNumber::"+selectNumber);
 					if(selectNumber >= 0) { // I, S, T, P 느린 알파벳 < E, N, F, J 빠른 알파벳 (빠른 알파벳쪽 점수 추가)
-						System.out.println("selectNumberABS[type=IE(E)]::"+Math.abs(selectNumber));
+						System.out.println("selectNumberABS[type=" + endWord + "(" + fastWord + ")]::"+Math.abs(selectNumber));
 						startTypeSum += Math.abs(selectNumber);
 					} else { // I, S, T, P 느린 알파벳 > E, N, F, J 빠른 알파벳 (느린 알파벳쪽 점수 추가)
-						System.out.println("selectNumberABS[type=IE(I)]::"+Math.abs(selectNumber));
+						System.out.println("selectNumberABS[type=" + endWord + "(" + slowWord + ")]::"+Math.abs(selectNumber));
 						endTypeSum += Math.abs(selectNumber);
 					}
 				}
