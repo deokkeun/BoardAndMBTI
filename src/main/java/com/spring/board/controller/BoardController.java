@@ -250,7 +250,6 @@ public class BoardController {
 				model.addAttribute("boardList", boardList);		
 			} 
 		}
-		
 		return "board/mbtiStart";
 	}
 	
@@ -263,7 +262,7 @@ public class BoardController {
 
 		boardVo.setMbtiArr(mbtiArr);
 		boardList = boardService.selectMbtiBoardList(boardVo);
-		model.addAttribute("boardList", boardList);	
+		model.addAttribute("boardList", boardList);
 		
 		System.out.println("startWord::"+startWord);
 		System.out.println("endWord::"+endWord);
@@ -272,7 +271,7 @@ public class BoardController {
 		int endTypeSum = 0; // I, S, T, P 느린 알파벳 타입 총점
 		
 		for(int i = 0; i < boardList.size(); i++) {
-			boardType0 = String.valueOf(paramMap.get("boardType"+Integer.toString(i))); // 질문사항 게시판 타입
+			boardType0 = String.valueOf(paramMap.get("boardType"+Integer.toString(i))); // 질문사항 게시판 타입( EX) EI, IE, EI, IE, IE )
 			int selectNumber = Integer.parseInt((paramMap.get(Integer.toString(i))).toString()) - 4; // 점수 초기화(-3, -2, -1, 0, 1, 2, 3)
 			
 				if(boardType0.equals(startWord)) { // EI, NS, FT, JP 유형
@@ -299,22 +298,19 @@ public class BoardController {
 			} 
 		
 		// 알파벳 타입별 총점으로 MBTI type 결정
-		// E, N, F, J 빠른 알파벳 총점 >= I, S, T, P 느린 알파벳 총점
-		if(startTypeSum >= endTypeSum) {
+		if(startTypeSum >= endTypeSum) { // E, N, F, J 빠른 알파벳 총점 >= I, S, T, P 느린 알파벳 총점
 			mbtiType += fastWord; // mbtiTYpe += 알파벳 빠른순
-			model.addAttribute("mbtiType", mbtiType);
-			System.out.println("--------mbtiTypeResult--------::"+mbtiType);
-			
-		// E, N, F, J 빠른 알파벳 총점 < I, S, T, P 느린 알파벳 총점
-		} else if(startTypeSum < endTypeSum) {
+		
+		} else if(startTypeSum < endTypeSum) { // E, N, F, J 빠른 알파벳 총점 < I, S, T, P 느린 알파벳 총점
 			mbtiType += slowWord; // mbtiTYpe += 알파벳 느린순
-			model.addAttribute("mbtiType", mbtiType);
-			System.out.println("--------mbtiTypeResult--------::"+mbtiType);
 		}
+		model.addAttribute("mbtiType", mbtiType);
+		
+		System.out.println("--------mbtiTypeResult--------::"+mbtiType);
 		System.out.println("startTypeSum::"+startTypeSum);
 		System.out.println("endTypeSum::"+endTypeSum);
 		
-		// MBTI 4개가 되면 결과 화면으로 가도록 boardList 비어있는 값 전달
+		// MBTI 완성 되면 결과 화면으로 가도록 boardList 비어있는 값 전달
 		if(mbtiType.length() == 4) { 
 			List<BoardVo> emptyBoardList = new ArrayList<>();
 			model.addAttribute("boardList", emptyBoardList);	
