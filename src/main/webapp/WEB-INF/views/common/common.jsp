@@ -15,6 +15,10 @@
 	var $j = jQuery.noConflict();
 </script>
 <body>
-
+<c:if test="${ !empty message }">
+    <script>
+        alert("${message}");
+    </script>
+</c:if> 
 </body>
 </html>

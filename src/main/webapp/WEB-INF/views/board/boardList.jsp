@@ -23,6 +23,10 @@
 	color: #ddd;
 	text-decoration: none;
 }
+.top-box {
+	display: flex;
+	justify-content: space-between;
+}
 </style>
 </head>
 <script type="text/javascript">
@@ -88,7 +92,8 @@
 			    data : {"checkStr": checkStr},
 			    success: function(data, textStatus, jqXHR)
 			    {
-			    	total.innerText = "total : " + data.boardList.length;
+			    	console.log(data.totalCnt);
+			    	total.innerText = "total : " + data.totalCnt;
 			    	
 			    	boardTable.innerHTML = "";
 			    	const tr1 = document.createElement( 'tr' );
@@ -123,9 +128,23 @@
 <body>
 <table  align="center">
 	<tr>
-		<td align="right" id="total">
-			total : ${totalCnt}
+		<td align="left" class="top-box">
+			<span>
+				<c:choose>
+					<c:when test="${!empty loginMember}">
+						${loginMember.userName}
+					</c:when>
+					<c:otherwise>
+						<a href ="/board/login.do">login</a>
+						<a href ="/board/join.do">join</a>
+					</c:otherwise>
+				</c:choose>
+			</span>
+			<span id="total">total : ${totalCnt}</span>
 		</td>
+<%-- 		<td align="right" id="total">
+			total : ${totalCnt}
+		</td> --%>
 	</tr>
 	<tr>
 		<td>
@@ -160,6 +179,9 @@
 	<tr>
 		<td align="right">
 			<a href ="/board/boardWrite.do">글쓰기</a>
+			<c:if test="${!empty loginMember}">
+				<a href ="/board/logout.do">로그아웃</a>
+			</c:if>
 		</td>
 	</tr>
 	<tr>

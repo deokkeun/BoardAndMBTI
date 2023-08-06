@@ -17,16 +17,18 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.spring.board.HomeController;
 import com.spring.board.service.boardService;
 import com.spring.board.vo.BoardVo;
 import com.spring.board.vo.PageVo;
+import com.spring.board.vo.UserVo;
 import com.spring.common.CommonUtil;
 
 @Controller
-@SessionAttributes({"boardTypeList", "boardList", "totalCnt", "pageNo"})
+@SessionAttributes({"loginMember"})
 public class BoardController {
 	
 	@Autowired 
@@ -48,7 +50,7 @@ public class BoardController {
 		}
 		
 		boardList = boardService.SelectBoardList(pageVo);
-		totalCnt = boardService.selectBoardCnt();
+		totalCnt = boardService.selectBoardCnt(pageVo);
 		boardTypeList = boardService.selectBoardType();
 		
 		model.addAttribute("boardTypeList", boardTypeList);
@@ -83,13 +85,14 @@ public class BoardController {
 				pageVo.setCheckArr(checkArr);
 				System.out.println("pageVo.getCheckArr()::"+pageVo.getCheckArr()[0]);
 			}
-
 		}
 		
 		Map<String, Object> map = new HashMap<>();
 		
 		boardList = boardService.SelectBoardList(pageVo);
-		totalCnt = boardService.selectBoardCnt();
+		totalCnt = boardService.selectBoardCnt(pageVo);
+		
+		System.out.println("totalCnt::"+totalCnt);
 		
 		boardTypeList = boardService.selectBoardType();
 		map.put("boardTypeList", boardTypeList);
@@ -177,7 +180,6 @@ public class BoardController {
 		}
 		
 		String callbackMsg = CommonUtil.getJsonCallBackString(" ",result);
-		
 		System.out.println("callbackMsg::"+callbackMsg);
 		
 		return callbackMsg;
@@ -197,10 +199,8 @@ public class BoardController {
 		System.out.println(type);
 		
 		if(type.equals("delete")) {
-			
 			int result = boardService.boardDelete(boardVo);
 			System.out.println("result::"+result);
-			
 		}
 		
 		return "redirect:/board/boardList.do";
@@ -316,5 +316,71 @@ public class BoardController {
 			model.addAttribute("boardList", emptyBoardList);	
 		}
 	}
+
+	
+//	------------------------- login -------------------------
+	@RequestMapping(value = "/board/login.do", method = RequestMethod.GET)
+	public String login() throws Exception{
+		return "board/login";
+	}
+	
+	@RequestMapping(value = "/board/login.do", method = RequestMethod.POST)
+	public String loginConfirm(Model model, UserVo loginMember, RedirectAttributes ra) throws Exception{
+		
+		loginMember = boardService.login(loginMember);
+		String message = null;
+		
+		if(loginMember != null) {
+			message = loginMember.getUserName()+"님 로그인을 환영합니다.";
+			ra.addFlashAttribute("message", message);
+			ra.addFlashAttribute("loginMember", loginMember);
+			return "redirect:/board/boardList.do";
+		}
+		message = "아이디와 비밀번호를 다시 확인해주세요.";			
+		ra.addFlashAttribute("message", message);
+		return "redirect:/board/login.do";
+	}
+		
+//	------------------------- join -------------------------
+	@RequestMapping(value = "/board/join.do", method = RequestMethod.GET)
+	public String join() throws Exception{
+		return "board/join";
+	}
+		
+	@RequestMapping(value = "/board/join.do", method = RequestMethod.POST)
+	public String joinConfirm(Model model, UserVo inputMember, RedirectAttributes ra) throws Exception{
+		
+		int result = boardService.join(inputMember);
+		System.out.println("result::"+result);
+		
+		String message = null;
+		
+		if(result > 0) {
+			message = inputMember.getUserName()+"님 회원가입을 축하합니다.";
+		} else {
+			message = "회원 가입중 오류 발생: 관리자에게 문의해주세요.";
+		}
+		ra.addFlashAttribute("message", message);
+		
+		return "redirect:/board/boardList.do";
+	}
+	
+//	------------------------- logout -------------------------
+	@RequestMapping(value = "/board/logout.do", method = RequestMethod.GET)
+	public String logout(SessionStatus status, RedirectAttributes ra) throws Exception{
+		ra.addFlashAttribute("message", "로그아웃 되었습니다.");
+		status.setComplete();
+		return "redirect:/board/boardList.do";
+	}
+	
+//	------------------------- userIdDupCheck -------------------------
+	@ResponseBody
+	@RequestMapping(value = "/board/userIdDupCheck.do", method = RequestMethod.POST)
+	public int userIdDupCheck(@RequestParam(value="userId", required=false) String userId) throws Exception{
+		return boardService.userIdDupCheck(userId);
+	}
+	
+	
+	
 	
 }

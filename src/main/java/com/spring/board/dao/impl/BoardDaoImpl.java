@@ -1,6 +1,7 @@
 package com.spring.board.dao.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.spring.board.dao.BoardDao;
 import com.spring.board.vo.BoardVo;
 import com.spring.board.vo.PageVo;
+import com.spring.board.vo.UserVo;
 
 @Repository
 public class BoardDaoImpl implements BoardDao{
@@ -34,9 +36,9 @@ public class BoardDaoImpl implements BoardDao{
 	}
 	
 	@Override
-	public int selectBoardCnt() throws Exception {
+	public int selectBoardCnt(PageVo pageVo) throws Exception {
 		// TODO Auto-generated method stub
-		return sqlSession.selectOne("board.boardTotal");
+		return sqlSession.selectOne("board.boardTotal", pageVo);
 	}
 	
 	@Override
@@ -71,6 +73,23 @@ public class BoardDaoImpl implements BoardDao{
 	public List<BoardVo> selectMbtiBoardList(BoardVo boardVo) throws Exception {
 		// TODO Auto-generated method stub
 		return sqlSession.selectList("board.selectMbtiBoardList", boardVo);
+	}
+	// 로그인
+	@Override
+	public UserVo login(UserVo loginMember) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("board.login", loginMember);	
+	}
+	// 아이디 중복검사
+	@Override
+	public int userIdDupCheck(String userId) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("board.userIdDupCheck", userId);
+	}
+	@Override
+	public int join(UserVo inputMember) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.insert("board.join", inputMember);
 	}
 	
 	

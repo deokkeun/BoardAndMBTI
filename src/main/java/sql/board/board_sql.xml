@@ -11,6 +11,23 @@
     	<result property="codeName" 	column="CODE_NAME"/>
     </resultMap>
     
+    <resultMap type="com.spring.board.vo.UserVo" id="userVo">
+    	<result property="userId" 		column="USER_ID"/>
+    	<result property="userPw" 		column="USER_PW"/>
+    	<result property="userName" 	column="USER_NAME"/>
+    	<result property="userPhone1" 	column="USER_PHONE1"/>
+    	<result property="userPhone2" 	column="USER_PHONE2"/>
+    	<result property="userPhone3" 	column="USER_PHONE3"/>
+    	<result property="userAddr1" 	column="USER_ADDR1"/>
+    	<result property="userAddr2" 	column="USER_ADDR2"/>
+    	<result property="userCompany" 	column="USER_COMPANY"/>
+    	<result property="creator" 		column="CREATOR"/>
+    	<result property="createTime" 	column="CREATE_TIME"/>
+    	<result property="modifier" 	column="MODIFIER"/>
+    	<result property="modifiedTime" column="MODIFIED_TIME"/>
+    </resultMap>
+    
+    
     <select id="boardList" parameterType="com.spring.board.vo.PageVo" resultMap="boardVo">
     <!-- board.boardList -->
         SELECT 
@@ -43,11 +60,22 @@
 		WHERE NUMROW BETWEEN (#{pageNo}-1)*10 + 1 AND (#{pageNo})*10
     </select>
     
-    <select id="boardTotal" parameterType="Integer" resultType="Integer">
+    <select id="boardTotal" parameterType="com.spring.board.vo.PageVo" resultType="Integer">
 		  SELECT
 		      	COUNT(*) AS TOTAL_CNT
 			FROM
-				BOARD	
+				BOARD
+		  <choose>
+		    <when test="checkArr != null">
+		      WHERE BOARD_TYPE IN
+    		    <foreach collection="checkArr" item="arr" open="(" close=")" separator=",">
+				 	#{arr}
+				</foreach>
+		    </when>
+		    <otherwise>
+		      WHERE BOARD_TYPE IN ('a01', 'a02', 'a03', 'a04')
+		    </otherwise>
+		  </choose>
     </select>
     	
     <select id="boardView" parameterType="com.spring.board.vo.BoardVo" resultMap="boardVo">
@@ -68,20 +96,20 @@
     <select id="boardInsert" parameterType="com.spring.board.vo.BoardVo">
         INSERT INTO 
         BOARD
-        (BOARD_TYPE
-        ,BOARD_NUM
-        ,BOARD_TITLE
-        ,BOARD_COMMENT
-        ,CREATOR
-        ,CREATE_TIME
-        ,MODIFIER
-        ,MODIFIED_TIME
-        )
+	        (BOARD_TYPE
+	        ,BOARD_NUM
+	        ,BOARD_TITLE
+	        ,BOARD_COMMENT
+	        ,CREATOR
+	        ,CREATE_TIME
+	        ,MODIFIER
+	        ,MODIFIED_TIME
+	        )
         VALUES
-        (#{codeId}
-        ,(SELECT NVL(TO_NUMBER(MAX(BOARD_NUM)+1), 0)
-	    FROM BOARD
-	    WHERE BOARD_TYPE = #{codeId})
+	        (#{codeId}
+	        ,(SELECT NVL(TO_NUMBER(MAX(BOARD_NUM)+1), 0)
+		    FROM BOARD
+		    WHERE BOARD_TYPE = #{codeId})
         ,#{boardTitle}
         ,#{boardComment}
         ,'SYSTEM'
@@ -142,5 +170,38 @@
 			</if>
 		)
     </select>
+    
+    <select id="login" parameterType="com.spring.board.vo.UserVo" resultMap="userVo">
+    	SELECT USER_ID, USER_PW, USER_NAME, USER_PHONE1, USER_PHONE2, USER_PHONE3, 
+		USER_ADDR1, USER_ADDR2, USER_COMPANY, CREATOR, CREATE_TIME, MODIFIER, MODIFIED_TIME
+		FROM USER_INFO
+		WHERE USER_ID = #{userId}
+		AND USER_PW = #{userPw}
+    </select>
+    
+    <select id="userIdDupCheck" parameterType="string" resultType="_int">
+    	SELECT count(USER_ID)
+		FROM USER_INFO
+		WHERE USER_ID = #{userId}
+    </select>
+    
+    <insert id="join" parameterType="com.spring.board.vo.UserVo">
+    	INSERT INTO 
+    		USER_INFO (USER_ID, USER_PW, 
+    				USER_NAME, 
+    				USER_PHONE1, USER_PHONE2, USER_PHONE3, 
+					USER_ADDR1, USER_ADDR2, 
+					USER_COMPANY, 
+					CREATOR, CREATE_TIME, 
+					MODIFIER, MODIFIED_TIME)
+			VALUES(#{userId}, #{userPw}, 
+					#{userName}, 
+					#{userPhone1}, #{userPhone2}, #{userPhone3}, 
+					#{userAddr1}, #{userAddr2}, 
+					#{userCompany}, 
+					#{userName}, SYSDATE, 
+					#{userName}, SYSDATE)
+    </insert>
+    
     
 </mapper>

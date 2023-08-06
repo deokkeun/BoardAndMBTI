@@ -1,6 +1,7 @@
 package com.spring.board.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.spring.board.dao.BoardDao;
 import com.spring.board.service.boardService;
 import com.spring.board.vo.BoardVo;
 import com.spring.board.vo.PageVo;
+import com.spring.board.vo.UserVo;
 
 @Service
 public class boardServiceImpl implements boardService{
@@ -30,9 +32,9 @@ public class boardServiceImpl implements boardService{
 	}
 	
 	@Override
-	public int selectBoardCnt() throws Exception {
+	public int selectBoardCnt(PageVo pageVo) throws Exception {
 		// TODO Auto-generated method stub
-		return boardDao.selectBoardCnt();
+		return boardDao.selectBoardCnt(pageVo);
 	}
 	
 	@Override
@@ -76,6 +78,25 @@ public class boardServiceImpl implements boardService{
 		// TODO Auto-generated method stub
 		return boardDao.selectMbtiBoardList(boardVo);
 	}
+
+	@Override
+	public UserVo login(UserVo loginMember) throws Exception {
+		// TODO Auto-generated method stub
+		return boardDao.login(loginMember);
+	}
+
+	@Override
+	public int userIdDupCheck(String userId) throws Exception {
+		// TODO Auto-generated method stub
+		return boardDao.userIdDupCheck(userId);
+	}
+
+	@Override
+	public int join(UserVo inputMember) throws Exception {
+		// TODO Auto-generated method stub
+		return boardDao.join(inputMember);
+	}
+	
 	
 	
 	
