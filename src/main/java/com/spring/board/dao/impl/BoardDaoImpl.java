@@ -91,6 +91,11 @@ public class BoardDaoImpl implements BoardDao{
 		// TODO Auto-generated method stub
 		return sqlSession.insert("board.join", inputMember);
 	}
+	@Override
+	public List<UserVo> phoneList() throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList("board.phoneList");
+	}
 	
 	
 	

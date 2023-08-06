@@ -290,8 +290,9 @@ function joinValidate() {
 					</td>
 					<td width="150" align="right">
 						<select  name="userPhone1" id="userPhone1" class="phone">
-							<option>010</option>
-							<option>02</option>
+							<c:forEach var="phone" items="${phoneList}">
+								<option value="${phone.codeId}">${phone.codeName}</option>
+							</c:forEach>
 						</select>
 						-
 						<input type="text" name="userPhone2" id="userPhone2" class="phone1" />

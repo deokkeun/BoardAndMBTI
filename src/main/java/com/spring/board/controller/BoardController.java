@@ -343,7 +343,13 @@ public class BoardController {
 		
 //	------------------------- join -------------------------
 	@RequestMapping(value = "/board/join.do", method = RequestMethod.GET)
-	public String join() throws Exception{
+	public String join(Model model) throws Exception{
+		
+		List<UserVo> phoneList = new ArrayList<>();
+		phoneList = boardService.phoneList();
+		model.addAttribute("phoneList", phoneList);
+		System.out.println("phoneList::"+phoneList);
+		
 		return "board/join";
 	}
 		

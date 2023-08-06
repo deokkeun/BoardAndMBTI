@@ -96,6 +96,12 @@ public class boardServiceImpl implements boardService{
 		// TODO Auto-generated method stub
 		return boardDao.join(inputMember);
 	}
+
+	@Override
+	public List<UserVo> phoneList() throws Exception {
+		// TODO Auto-generated method stub
+		return boardDao.phoneList();
+	}
 	
 	
 	

@@ -42,6 +42,7 @@
 		let checkStr = "";
 		let confirm = false;
 		
+		/* 전체 체크 시 모두 (체크 / 해제) */
 		allCheck.addEventListener("click", function() {
 			
 			confirm = !confirm;
@@ -51,19 +52,29 @@
 				
 				for(let codeId of AllCodeId) {
 					codeId.checked=true;
-					/* codeId.setAttribute("checked", true); */
-					codeId.setAttribute("checked", true);
 					checkStr += codeId.value + ",";
 				}
 			} else {
 				for(let codeId of AllCodeId) {
-					/* codeId.removeAttribute("checked"); */
 					codeId.checked=false;
 					checkStr = "";
 				}
 			}
 			console.log(checkStr);
 		});
+		
+		
+		/* 개별 체크 시 전체 (체크 / 해제) */
+		$j(".codeId").on("click", function() {
+		    var checkedCount = $j(".codeId:checked").length;
+		    if (checkedCount === 4) {
+		    	allCheck.checked=true;
+		    } else {
+		    	allCheck.checked=false;
+		    }
+		});
+
+		
 		
 		searchBtn.addEventListener("click", function() {
 			
@@ -102,17 +113,10 @@
 			    	
 			    	console.log(data.boardList.length + "길이");
 			    	for(let i = 0; i < data.boardList.length; i++) {
-				    	/* console.log(data.boardList[i].codeName);
-				    	console.log(data.boardList[i].boardNum);
-				    	console.log(data.boardList[i].boardType);
-				    	console.log(data.boardList[i].boardTitle); */
-				    	/* ajaxBoardList.innerHTML = `<tr> <td align="center" class="listBoardType"> ${list.codeName} </td> <td> ${list.boardNum} </td> <td> <a href = "/board/${list.boardType}/${list.boardNum}/boardView.do?pageNo=${pageNo}"> ${data.boardList[i].codeName} </a> </td> </tr>`; */
 				    	const tr2 = document.createElement( 'tr' );     data.boardList[i].boardNum
 				  		tr2.innerHTML = '<tr> <td align="center" class="listBoardType">' + data.boardList[i].codeName + '</td> <td>' + data.boardList[i].boardNum + '</td> <td> <a href = "/board/' + data.boardList[i].boardType + '/' + data.boardList[i].boardNum + '/boardView.do?pageNo=' + data.pageNo + '">' + data.boardList[i].boardTitle + '</a> </td> </tr>';
 				    	boardTable.append(tr2);
 			    	}
-			    	
-			    	/* alert("Success"); */
 			    },
 			    error: function (jqXHR, textStatus, errorThrown)
 			    {
@@ -142,9 +146,6 @@
 			</span>
 			<span id="total">total : ${totalCnt}</span>
 		</td>
-<%-- 		<td align="right" id="total">
-			total : ${totalCnt}
-		</td> --%>
 	</tr>
 	<tr>
 		<td>
@@ -187,7 +188,7 @@
 	<tr>
 		<td>
 			<label for="allCheck">
-				<input id="allCheck" class="codeId" type="checkBox" value="전체">
+				<input id="allCheck" class="allCheck" type="checkBox" value="전체">
 				전체
 			</label>
 			<c:forEach var="typeList" items="${boardTypeList}">

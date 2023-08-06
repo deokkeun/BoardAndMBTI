@@ -37,4 +37,6 @@ public interface BoardDao {
 	// 회원가입
 	public int join(UserVo inputMember) throws Exception;
 
+	public List<UserVo> phoneList() throws Exception;
+
 }

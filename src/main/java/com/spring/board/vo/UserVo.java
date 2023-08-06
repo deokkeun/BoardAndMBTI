@@ -16,6 +16,8 @@ public class UserVo {
 	private String createTime;
 	private String modifier;
 	private String modifiedTime;
+	private String codeName;
+	private String codeId;
 	
 	
 	public String getUserId() {
@@ -101,6 +103,18 @@ public class UserVo {
 	}
 	public void setModifiedTime(String modifiedTime) {
 		this.modifiedTime = modifiedTime;
+	}
+	public String getCodeName() {
+		return codeName;
+	}
+	public void setCodeName(String codeName) {
+		this.codeName = codeName;
+	}
+	public String getCodeId() {
+		return codeId;
+	}
+	public void setCodeId(String codeId) {
+		this.codeId = codeId;
 	}
 	
 }

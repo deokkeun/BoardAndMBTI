@@ -25,6 +25,8 @@
     	<result property="createTime" 	column="CREATE_TIME"/>
     	<result property="modifier" 	column="MODIFIER"/>
     	<result property="modifiedTime" column="MODIFIED_TIME"/>
+    	<result property="codeName" 	column="CODE_NAME"/>
+    	<result property="codeId" 		column="CODE_ID"/>
     </resultMap>
     
     
@@ -196,12 +198,21 @@
 					MODIFIER, MODIFIED_TIME)
 			VALUES(#{userId}, #{userPw}, 
 					#{userName}, 
-					#{userPhone1}, #{userPhone2}, #{userPhone3}, 
+					(SELECT CODE_NAME
+							FROM COM_CODE
+							WHERE CODE_ID = #{userPhone1}), 
+							#{userPhone2}, #{userPhone3}, 
 					#{userAddr1}, #{userAddr2}, 
 					#{userCompany}, 
 					#{userName}, SYSDATE, 
 					#{userName}, SYSDATE)
     </insert>
     
+    <select id="phoneList" resultMap="userVo">
+    	SELECT CODE_ID
+    			,CODE_NAME 
+    	FROM COM_CODE
+		WHERE CODE_TYPE = 'phone'
+    </select>
     
 </mapper>
