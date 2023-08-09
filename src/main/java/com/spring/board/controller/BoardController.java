@@ -1,5 +1,6 @@
 package com.spring.board.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -161,22 +162,68 @@ public class BoardController {
 	
 	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	@ResponseBody
-	public String boardWriteAction(Locale locale,BoardVo boardVo) throws Exception{
+	public String boardWriteAction(Locale locale, BoardVo boardVo,
+			@RequestParam(value="codeIdArr", required=false) String codeIdArr) throws Exception{
 		
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
 		
+		System.out.println("codeIdArr::"+codeIdArr);
+		System.out.println("boardVo.Title::"+boardVo.getBoardTitle());
+		System.out.println("boardVo.Comment::"+boardVo.getBoardComment());
 		System.out.println("boardVo.codeId::"+boardVo.getCodeId());
+		System.out.println("boardVo.creator::"+boardVo.getCreator());
 		
-		// update
-		if(boardVo.getType().equals("update")) {
-			int resultCnt = boardService.boardUpdate(boardVo);
-			result.put("update", (resultCnt > 0)?"Y":"N");
+		String[] typeArr;
+		String[] titleArr;
+		String[] commentArr;
+		if(codeIdArr.length() > 4) {
+			typeArr = codeIdArr.split(",");
+			titleArr = boardVo.getBoardTitle().split(",,,");
+			commentArr = boardVo.getBoardComment().split(",,,");
 			
-		} else { // insert
-			int resultCnt = boardService.boardInsert(boardVo);
-			result.put("success", (resultCnt > 0)?"Y":"N");
+			for(int i = 0; i < typeArr.length; i++) {
+				boardVo.setCodeId(typeArr[i]);
+				boardVo.setBoardTitle(titleArr[i]);
+				boardVo.setBoardComment(commentArr[i]);
 				
+				// update
+				if(boardVo.getType().equals("update")) {
+					int resultCnt = boardService.boardUpdate(boardVo);
+					result.put("update", (resultCnt > 0)?"Y":"N");
+					
+				} else { // insert
+					if(boardVo.getCreator().equals("")) {
+						boardVo.setCreator("SYSTEM");
+					}
+					if(boardVo.getCodeId().equals("")) {
+						boardVo.setCodeId("a01");
+					}
+					int resultCnt = boardService.boardInsert(boardVo);
+					result.put("success", (resultCnt > 0)?"Y":"N");
+					
+				}
+				
+			}
+		} else {
+			
+			// update
+			if(boardVo.getType().equals("update")) {
+				int resultCnt = boardService.boardUpdate(boardVo);
+				result.put("update", (resultCnt > 0)?"Y":"N");
+				
+			} else { // insert
+				if(boardVo.getCreator().equals("")) {
+					boardVo.setCreator("SYSTEM");
+				}
+				if(boardVo.getCodeId().equals("")) {
+					boardVo.setCodeId("a01");
+				}
+				int resultCnt = boardService.boardInsert(boardVo);
+				result.put("success", (resultCnt > 0)?"Y":"N");
+				
+			}
+			
 		}
 		
 		String callbackMsg = CommonUtil.getJsonCallBackString(" ",result);
@@ -356,6 +403,11 @@ public class BoardController {
 	@RequestMapping(value = "/board/join.do", method = RequestMethod.POST)
 	public String joinConfirm(Model model, UserVo inputMember, RedirectAttributes ra) throws Exception{
 		
+		
+		String userName = uni2ksc(inputMember.getUserName());
+		inputMember.setUserName(userName);
+		System.out.println("userName::"+userName);
+		
 		int result = boardService.join(inputMember);
 		System.out.println("result::"+result);
 		
@@ -385,8 +437,18 @@ public class BoardController {
 	public int userIdDupCheck(@RequestParam(value="userId", required=false) String userId) throws Exception{
 		return boardService.userIdDupCheck(userId);
 	}
+
 	
 	
+	// 유니코드를 한글코드로 변환
+	protected String uni2ksc (String Unicodestr) throws UnsupportedEncodingException {
+	return new String (Unicodestr.getBytes("8859_1"),"KSC5601");
+	}
+	
+	// 한글코드를 유니코드로 변환
+	protected String ksc2uni(String str) throws UnsupportedEncodingException {
+	return new String( str.getBytes("KSC5601"), "8859_1");
+	}
 	
 	
 }

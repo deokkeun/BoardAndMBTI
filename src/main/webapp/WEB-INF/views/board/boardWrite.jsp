@@ -9,7 +9,21 @@
 </head>
 <script type="text/javascript">
 
-	function changeFn(){
+	let selectTypeStr = "";
+
+	function changeFn() {
+		selectTypeStr = "";
+		let selectTypeBox = document.getElementsByName("selectTypeBox");
+		var codeIdArr = document.getElementById("codeIdArr");
+		
+		console.log(selectTypeBox[0].value);
+		for(let i = 0; i < selectTypeBox.length; i++) {
+			/* alert("selectType[" + i + "]:"+ selectTypeBox[i].value); */
+			selectTypeStr += selectTypeBox[i].value + ",";
+		}
+		codeIdArr.value = selectTypeStr;
+		
+		
 		var codeId = document.getElementById("codeId");
 		var codeIdType = document.getElementById("codeIdType");
 		var selectCodeIdType = (codeIdType.options[codeIdType.selectedIndex].value);
@@ -18,8 +32,18 @@
 	}
 	
 	$j(document).ready(function(){
-	
+		const table = document.getElementById("table");
+		const plusBtn = document.getElementById("plusBtn");
+		const minusBtn = document.getElementById("minusBtn");
+		
+		
+		
+		const boardTitle = document.getElementById("boardTitle");
+		const boardComment = document.getElementById("boardComment");
 		$j("#submit").on("click",function(){
+			boardTitle.value += ",,";
+			boardComment.value += ",,";
+			
 			var $frm = $j('.boardWrite :input');
 			var param = $frm.serialize();
 			console.log($frm);			
@@ -29,10 +53,11 @@
 			    url : "/board/boardWriteAction.do",
 			    dataType: "json",
 			    type: "POST",
-			    data : param,
+			    data : param, selectTypeStr,
 			    success: function(data, textStatus, jqXHR)
 			    {
 			    	if(data.update == 'Y') {
+			    		console.log(param);
 			    		console.log(data);
 						alert("수정완료");
 						console.log(data);
@@ -53,7 +78,73 @@
 			    }
 			});
 		});
-	});
+		
+		
+	}); /* $j(document).ready(function() 끝 */
+
+	
+	let classNum = 0;
+	
+	
+	function plus() {
+		const cloneTable1 = document.getElementById("cloneTable1");
+		const cloneTable2 = document.getElementById("cloneTable2");
+		const cloneTable3 = document.getElementById("cloneTable3");
+	  	// 'test' node 선택
+		const tr3 = table.children[0].children[2];
+	  
+	  // 노드 복사하기 (deep copy)
+	  const newNode1 = cloneTable1.cloneNode(true);
+	  const newNode2 = cloneTable2.cloneNode(true);
+	  const newNode3 = cloneTable3.cloneNode(true);
+	  
+	  // 복사된 Node에 class 추가하기
+	  classNum++;
+	  newNode1.classList.add('copyNode' + classNum);
+	  newNode2.classList.add('copyNode' + classNum);
+	  newNode3.classList.add('copyNode' + classNum);
+	  
+	  // 복사한 노드 붙여넣기
+	  tr3.after(newNode3);
+	  tr3.after(newNode2);
+	  tr3.after(newNode1);
+		
+	  copyNodeCount();
+	  
+		/* type 기본값 배열 생성 */
+		changeFn();
+	}
+	
+	function minus() {
+		const removeNumber = $j("#selectBox").val();
+		console.log("선택자"+$j("#selectBox").val());
+
+		if(removeNumber == "기본값") {
+			alert("기본값은 제거할 수 없습니다.");
+		}
+		
+		/* 테이블 제거 */
+		const removeElement = document.getElementsByClassName("copyNode" + removeNumber);
+		for(let i = 0; i < removeElement.length; i++) {
+			removeElement[i].remove();
+		}
+			removeElement[0].remove();
+			
+			$j("#selectBox option[value=" + removeNumber + "]").remove();
+			
+	}
+	
+	
+	function copyNodeCount() {
+		/* 복제된 노드 개수 */
+		const cloneTable0 = (document.getElementsByClassName("cloneTable0").length / 3) - 1;
+		const selectBox = document.getElementById("selectBox");
+		const option = document.createElement("option");
+		option.setAttribute("value", selectBox.length);
+		option.innerText = selectBox.length;
+		selectBox.append(option);
+	}
+	
 	
 
 </script>
@@ -66,11 +157,23 @@
 	</c:if>
 
 	<input name="codeId" id="codeId" type="hidden" value="${boardType}" />
+	<input name="codeIdArr" id="codeIdArr" type="hidden" value="${boardType}" />
+	<input name="creator" id="creator" type="hidden" value="${loginMember.userName}" />
+	<input name="type" id="type" type="hidden" value="${type}" />
 
 	<table align="center">
 		<tr>
 			<td align="right">
-				<input name="type" id="type" type="hidden" value="${type}" />
+				
+				<!-- 게시글 추가 -->
+				<button	type="button" id="plusBtn" onclick="plus();">+</button>
+				
+				<select id="selectBox">
+					<option value="기본값">기본값</option>
+				</select>
+				<!-- 게시글 제거 -->
+				<button	type="button" id="minusBtn" onclick="minus();">-</button>
+				
 				
 				<c:if test="${type == 'write'}"> 
 					<input id="submit" type="button" value="작성 완료">
@@ -82,14 +185,14 @@
 		</tr>
 		<tr>
 			<td>
-				<table border ="1"> 
-					<tr>
+				<table border ="1" id="table"> 
+					<tr id="cloneTable1" class="cloneTable0">
 						<td width="120" align="center">
 						Type
 						</td>
 						<td width="400">
-							<select id="codeIdType" onchange="changeFn()">
-								<c:forEach var="typeList" items="${boardTypeList}">
+							<select id="codeIdType" name="selectTypeBox" onchange="changeFn()">
+								<c:forEach var="typeList" items="${boardTypeList}" varStatus="status">
 									<c:choose>
 										<c:when test="${!empty board.boardType}">
 											<c:if test="${board.boardType.equals(typeList.codeId)}">
@@ -107,20 +210,20 @@
 							</select>
 						</td>
 					</tr>
-					<tr>
+					<tr id="cloneTable2" class="cloneTable0">
 						<td width="120" align="center">
 						Title
 						</td>
 						<td width="400">
-						<input name="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
+						<input name="boardTitle" id="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
 						</td>
 					</tr>
-					<tr>
+					<tr id="cloneTable3" class="cloneTable0">
 						<td height="300" align="center">
 						Comment
 						</td>
 						<td valign="top">
-						<textarea name="boardComment"  rows="20" cols="55">${board.boardComment}</textarea>
+						<textarea name="boardComment" id="boardComment" rows="20" cols="55">${board.boardComment}</textarea>
 						</td>
 					</tr>
 					<tr>
@@ -128,6 +231,24 @@
 						Writer
 						</td>
 						<td>
+							<c:choose>
+								<c:when test="${board.creator == null}">
+									<c:if test="${loginMember.userName != null}">
+										${loginMember.userName}
+										</c:if>
+										<c:if test="${loginMember.userName == null}">
+										SYSTEM
+									</c:if>
+								</c:when>
+								<c:otherwise>
+									<c:if test="${loginMember.userName != null}">
+									${loginMember.userName}
+									</c:if>
+									<c:if test="${loginMember.userName == null}">
+									SYSTEM
+									</c:if>
+								</c:otherwise>
+							</c:choose>
 						</td>
 					</tr>
 				</table>

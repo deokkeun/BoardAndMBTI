@@ -7,13 +7,14 @@ public class BoardVo {
 	private String 	boardTitle;
 	private String 	boardComment;
 	private String 	creator;
+	private String  createTime;
 	private String	modifier;
+	private String  modifiedTime;
 	private int 	totalCnt;
 	private String type;
 	private String codeId;
 	private String codeName;
 	private String[] mbtiArr;
-	
 	
 	public int getTotalCnt() {
 		return totalCnt;
@@ -80,5 +81,17 @@ public class BoardVo {
 	}
 	public void setMbtiArr(String[] mbtiArr) {
 		this.mbtiArr = mbtiArr;
+	}
+	public String getCreateTime() {
+		return createTime;
+	}
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+	public String getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(String modifiedTime) {
+		this.modifiedTime = modifiedTime;
 	}
 }

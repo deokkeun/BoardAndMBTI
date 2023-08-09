@@ -180,6 +180,9 @@
 	<tr>
 		<td align="right">
 			<a href ="/board/boardWrite.do">글쓰기</a>
+			<!-- 로그인한 회원만 글쓰기의 경우 -->
+			<%-- <c:if test="${loginMember != 'SYSTEM'}">
+			</c:if> --%>
 			<c:if test="${!empty loginMember}">
 				<a href ="/board/logout.do">로그아웃</a>
 			</c:if>

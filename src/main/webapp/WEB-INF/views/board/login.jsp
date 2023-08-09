@@ -8,12 +8,8 @@
 <title>boardWrite</title>
 </head>
 <script type="text/javascript">
-
-	$j(document).ready(function(){
-	});
-/* 	
-	function loginValidate() {
-		$j.ajax({
+		
+/* 		$j.ajax({
 		    url : "/board/userIdDupCheck.do",
 		    dataType: "json",
 		    type: "POST",
@@ -29,8 +25,28 @@
 		    {
 		    	alert("Error");
 		    }
-		});
-	} */
+		}); */
+
+	$j(document).ready(function(){
+		const userId = document.getElementById("userId");
+		const userPw = document.getElementById("userPW");
+	});
+		
+		function loginValidate() {
+			if(userId.value.length == 0) {
+				alert("아이디를 입력해주세요.");
+				userId.focus();
+				return false;
+			}
+			
+			if(userPw.value.length == 0) {
+				alert("비밀번호를 입력해주세요.");
+				userPw.focus();
+				return false;
+			}
+		}
+		
+
 	
 	
 </script>
@@ -44,7 +60,7 @@
 				id
 			</td>
 			<td width="150" align="right">
-				<input type="text" name="userId" id="userId"/>
+				<input type="text" maxlength="15" name="userId" id="userId"/>
 			</td>
 		</tr>
 		<tr>
@@ -52,7 +68,7 @@
 				pw
 			</td>
 			<td width="150" align="right">
-				<input type="password" name="userPw" id="userPw"/>
+				<input type="password" maxlength="12" name="userPw" id="userPw" style="ime-mode:disabled;" autocomplete="false"/>
 			</td>
 		</tr>
 	</table>

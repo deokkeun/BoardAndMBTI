@@ -41,6 +41,10 @@
 					Writer
 					</td>
 					<td>
+					${board.creator}
+					<!-- SYSTEM이 아닌경우 -->
+					<%-- <c:if test="${board.creator != 'SYSTEM'}">
+					</c:if> --%>
 					</td>
 				</tr>
 			</table>
@@ -49,18 +53,38 @@
 	<tr>
 		<td align="right">
 			<a href="/board/boardList.do">List</a>
-			<form action="/board/boardWrite.do" method="GET" onsubmit="typeValidate('update')">
-				<button type="submit" id="boardUpdate">Update</button>
-				<input name="boardType" type="hidden" value="${boardType}">
-				<input name="boardNum"  type="hidden" value="${boardNum}">
-			</form>
 			
-			<form action="/board/${boardType}/${boardNum}/boardDelete.do" method="GET" onsubmit="typeValidate('delete')">
-				<button type="submit" id="boardDelete">Delete</button>
- 				<input name="type" type="hidden" value="delete">
- 				<input name="boardType" type="hidden" value="${boardType}">
-				<input name="boardNum"  type="hidden" value="${boardNum}">
-			</form>
+			<c:if test="${board.creator.equals(loginMember.userName)}">
+				<form action="/board/boardWrite.do" method="GET" onsubmit="typeValidate('update')">
+					<button type="submit" id="boardUpdate">Update</button>
+					<input name="boardType" type="hidden" value="${boardType}">
+					<input name="boardNum"  type="hidden" value="${boardNum}">
+				</form>
+				<form action="/board/${boardType}/${boardNum}/boardDelete.do" method="GET" onsubmit="typeValidate('delete')">
+					<button type="submit" id="boardDelete">Delete</button>
+	 				<input name="type" type="hidden" value="delete">
+	 				<input name="boardType" type="hidden" value="${boardType}">
+					<input name="boardNum"  type="hidden" value="${boardNum}">
+				</form>
+			</c:if>
+			<c:if test="${!board.creator.equals(loginMember.userName)}">
+			
+			</c:if>
+			<c:if test="${empty loginMember.userName}">
+				<c:if test='${board.creator.equals("SYSTEM")}'>
+					<form action="/board/boardWrite.do" method="GET" onsubmit="typeValidate('update')">
+						<button type="submit" id="boardUpdate">Update</button>
+						<input name="boardType" type="hidden" value="${boardType}">
+						<input name="boardNum"  type="hidden" value="${boardNum}">
+					</form>
+					<form action="/board/${boardType}/${boardNum}/boardDelete.do" method="GET" onsubmit="typeValidate('delete')">
+						<button type="submit" id="boardDelete">Delete</button>
+		 				<input name="type" type="hidden" value="delete">
+		 				<input name="boardType" type="hidden" value="${boardType}">
+						<input name="boardNum"  type="hidden" value="${boardNum}">
+					</form>
+				</c:if>
+			</c:if>
 			<script>
 				function typeValidate(type) {
 
@@ -78,7 +102,6 @@
 					}
 				}
 			</script>
-			boardType = ${boardType}, boardNum = ${boardNum}
 		</td>
 	</tr>
 </table>	

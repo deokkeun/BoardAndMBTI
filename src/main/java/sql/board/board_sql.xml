@@ -7,6 +7,10 @@
     	<result property="boardNum" 	column="BOARD_NUM"/>
     	<result property="boardTitle" 	column="BOARD_TITLE"/>
     	<result property="boardComment" column="BOARD_COMMENT"/>
+ 	    <result property="creator" 		column="CREATOR"/>
+    	<result property="createTime" 	column="CREATE_TIME"/>
+    	<result property="modifier" 	column="MODIFIER"/>
+    	<result property="modifiedTime" column="MODIFIED_TIME"/>
     	<result property="codeId" 		column="CODE_ID"/>
     	<result property="codeName" 	column="CODE_NAME"/>
     </resultMap>
@@ -82,17 +86,19 @@
     	
     <select id="boardView" parameterType="com.spring.board.vo.BoardVo" resultMap="boardVo">
     	SELECT
-        	BOARD_TYPE
-			,BOARD_NUM
-			,BOARD_TITLE
-			,BOARD_COMMENT
-			,CODE_NAME
+        	b.BOARD_TYPE
+			,b.BOARD_NUM
+			,b.BOARD_TITLE
+			,b.BOARD_COMMENT
+			,c.CODE_NAME
+			,b.CREATOR
+			,b.CREATE_TIME
 		FROM
-			BOARD
-		JOIN 	COM_CODE ON (BOARD_TYPE = CODE_ID)	
-    	WHERE 	BOARD_TYPE = #{boardType}
-    	AND 	BOARD_NUM  = #{boardNum}
-    	AND		CODE_TYPE = 'menu'
+			BOARD b
+		JOIN 	COM_CODE c ON (BOARD_TYPE = CODE_ID)	
+    	WHERE 	b.BOARD_TYPE = #{boardType}
+    	AND 	b.BOARD_NUM  = #{boardNum}
+    	AND		c.CODE_TYPE = 'menu'
     </select>	
     
     <select id="boardInsert" parameterType="com.spring.board.vo.BoardVo">
@@ -114,9 +120,9 @@
 		    WHERE BOARD_TYPE = #{codeId})
         ,#{boardTitle}
         ,#{boardComment}
-        ,'SYSTEM'
+        ,#{creator}
         ,TO_CHAR(SYSDATE)
-        ,'SYSTEM'
+        ,#{creator}
         ,TO_CHAR(SYSDATE)
         )
     </select>
@@ -126,7 +132,10 @@
 		SET BOARD_TYPE = #{codeId},
 			BOARD_TITLE = #{boardTitle},
 			BOARD_COMMENT = #{boardComment},
-			MODIFIED_TIME = TO_CHAR(SYSDATE)
+			MODIFIED_TIME = TO_CHAR(SYSDATE),
+			BOARD_NUM = (SELECT NVL(TO_NUMBER(MAX(BOARD_NUM)+1), 0)
+					    FROM BOARD
+					    WHERE BOARD_TYPE = #{codeId})
 		WHERE BOARD_TYPE = #{boardType}
 		AND BOARD_NUM = #{boardNum}
     </update>
