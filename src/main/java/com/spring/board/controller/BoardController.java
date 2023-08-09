@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,17 +137,12 @@ public class BoardController {
 		
 		List<BoardVo> boardTypeList = new ArrayList<>();
 		boardTypeList = boardService.selectBoardType();
-		
 		model.addAttribute("boardTypeList", boardTypeList);
 		
-		
 		String type = "write";
-
 		if(boardType != null) { // update
-			
 			BoardVo boardVo = new BoardVo();
 			boardVo = boardService.selectBoard(boardType,boardNum);
-			
 			type = "update";
 			model.addAttribute("board", boardVo);
 			model.addAttribute("type", type);
@@ -153,7 +150,6 @@ public class BoardController {
 			model.addAttribute("boardNum", boardNum);
 			
 		} else { // insert
-			
 			model.addAttribute("type", type);
 		}
 		
@@ -162,70 +158,52 @@ public class BoardController {
 	
 	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	@ResponseBody
-	public String boardWriteAction(Locale locale, BoardVo boardVo,
+	public String boardWriteAction(Locale locale, BoardVo boardVo, HttpServletRequest request,
 			@RequestParam(value="codeIdArr", required=false) String codeIdArr) throws Exception{
 		
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
 		
-		System.out.println("codeIdArr::"+codeIdArr);
-		System.out.println("boardVo.Title::"+boardVo.getBoardTitle());
-		System.out.println("boardVo.Comment::"+boardVo.getBoardComment());
-		System.out.println("boardVo.codeId::"+boardVo.getCodeId());
-		System.out.println("boardVo.creator::"+boardVo.getCreator());
-		
 		String[] typeArr;
-		String[] titleArr;
-		String[] commentArr;
-		if(codeIdArr.length() > 4) {
+		
+		if(codeIdArr.length() > 5) {
 			typeArr = codeIdArr.split(",");
-			titleArr = boardVo.getBoardTitle().split(",,,");
-			commentArr = boardVo.getBoardComment().split(",,,");
+			String[] boardTitle= request.getParameterValues("boardTitle");
+			String[] boardComment= request.getParameterValues("boardComment");
 			
 			for(int i = 0; i < typeArr.length; i++) {
+				System.out.println("typeArr[i]::"+typeArr[i]);
+				System.out.println("boardTitle[i]::"+boardTitle[i]);
+				System.out.println("boardComment[i]::"+boardComment[i]);
+
 				boardVo.setCodeId(typeArr[i]);
-				boardVo.setBoardTitle(titleArr[i]);
-				boardVo.setBoardComment(commentArr[i]);
+				boardVo.setBoardTitle(boardTitle[i]);
+				boardVo.setBoardComment(boardComment[i]);
 				
 				// update
 				if(boardVo.getType().equals("update")) {
 					int resultCnt = boardService.boardUpdate(boardVo);
 					result.put("update", (resultCnt > 0)?"Y":"N");
-					
 				} else { // insert
 					if(boardVo.getCreator().equals("")) {
 						boardVo.setCreator("SYSTEM");
 					}
-					if(boardVo.getCodeId().equals("")) {
-						boardVo.setCodeId("a01");
-					}
 					int resultCnt = boardService.boardInsert(boardVo);
 					result.put("success", (resultCnt > 0)?"Y":"N");
-					
 				}
-				
 			}
 		} else {
-			
-			// update
-			if(boardVo.getType().equals("update")) {
+			if(boardVo.getType().equals("update")) { // update
 				int resultCnt = boardService.boardUpdate(boardVo);
 				result.put("update", (resultCnt > 0)?"Y":"N");
-				
 			} else { // insert
 				if(boardVo.getCreator().equals("")) {
 					boardVo.setCreator("SYSTEM");
 				}
-				if(boardVo.getCodeId().equals("")) {
-					boardVo.setCodeId("a01");
-				}
 				int resultCnt = boardService.boardInsert(boardVo);
 				result.put("success", (resultCnt > 0)?"Y":"N");
-				
 			}
-			
 		}
-		
 		String callbackMsg = CommonUtil.getJsonCallBackString(" ",result);
 		System.out.println("callbackMsg::"+callbackMsg);
 		

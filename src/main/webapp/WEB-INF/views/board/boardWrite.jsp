@@ -10,40 +10,36 @@
 <script type="text/javascript">
 
 	let selectTypeStr = "";
-
+	/* boardType을 넣어주는 함수 */
 	function changeFn() {
+		/* boardType이 여러개인 경우 */
 		selectTypeStr = "";
 		let selectTypeBox = document.getElementsByName("selectTypeBox");
 		var codeIdArr = document.getElementById("codeIdArr");
-		
 		console.log(selectTypeBox[0].value);
 		for(let i = 0; i < selectTypeBox.length; i++) {
-			/* alert("selectType[" + i + "]:"+ selectTypeBox[i].value); */
 			selectTypeStr += selectTypeBox[i].value + ",";
 		}
 		codeIdArr.value = selectTypeStr;
 		
-		
+		/* boardType이 한개인 경우 */
 		var codeId = document.getElementById("codeId");
 		var codeIdType = document.getElementById("codeIdType");
 		var selectCodeIdType = (codeIdType.options[codeIdType.selectedIndex].value);
-		/* alert("selectCodeIdType = "+selectCodeIdType); */
 		codeId.value = selectCodeIdType;
 	}
 	
 	$j(document).ready(function(){
+		
 		const table = document.getElementById("table");
 		const plusBtn = document.getElementById("plusBtn");
 		const minusBtn = document.getElementById("minusBtn");
 		
+		const boardTitle = document.getElementsByClassName("boardTitle");
+		const boardComment = document.getElementsByClassName("boardComment");
 		
-		
-		const boardTitle = document.getElementById("boardTitle");
-		const boardComment = document.getElementById("boardComment");
 		$j("#submit").on("click",function(){
-			boardTitle.value += ",,";
-			boardComment.value += ",,";
-			
+			changeFn();
 			var $frm = $j('.boardWrite :input');
 			var param = $frm.serialize();
 			console.log($frm);			
@@ -78,18 +74,15 @@
 			    }
 			});
 		});
-		
-		
 	}); /* $j(document).ready(function() 끝 */
-
 	
+			
 	let classNum = 0;
-	
-	
 	function plus() {
 		const cloneTable1 = document.getElementById("cloneTable1");
 		const cloneTable2 = document.getElementById("cloneTable2");
 		const cloneTable3 = document.getElementById("cloneTable3");
+		
 	  	// 'test' node 선택
 		const tr3 = table.children[0].children[2];
 	  
@@ -103,6 +96,7 @@
 	  newNode1.classList.add('copyNode' + classNum);
 	  newNode2.classList.add('copyNode' + classNum);
 	  newNode3.classList.add('copyNode' + classNum);
+	  newNode1.innerHTML += '<button type="button" class="minusBtn" onclick="minus(' + classNum + ');">삭제</button>';
 	  
 	  // 복사한 노드 붙여넣기
 	  tr3.after(newNode3);
@@ -115,38 +109,24 @@
 		changeFn();
 	}
 	
-	function minus() {
-		const removeNumber = $j("#selectBox").val();
-		console.log("선택자"+$j("#selectBox").val());
-
-		if(removeNumber == "기본값") {
-			alert("기본값은 제거할 수 없습니다.");
-		}
-		
-		/* 테이블 제거 */
-		const removeElement = document.getElementsByClassName("copyNode" + removeNumber);
+	
+	function minus(classNum) {
+		const removeElement = document.getElementsByClassName("copyNode" + classNum);
 		for(let i = 0; i < removeElement.length; i++) {
 			removeElement[i].remove();
 		}
 			removeElement[0].remove();
-			
-			$j("#selectBox option[value=" + removeNumber + "]").remove();
-			
 	}
 	
 	
 	function copyNodeCount() {
 		/* 복제된 노드 개수 */
 		const cloneTable0 = (document.getElementsByClassName("cloneTable0").length / 3) - 1;
-		const selectBox = document.getElementById("selectBox");
 		const option = document.createElement("option");
-		option.setAttribute("value", selectBox.length);
-		option.innerText = selectBox.length;
-		selectBox.append(option);
+		option.setAttribute("value", classNum);
+		option.innerText = classNum;
 	}
 	
-	
-
 </script>
 <body>
 <form class="boardWrite">
@@ -166,14 +146,7 @@
 			<td align="right">
 				
 				<!-- 게시글 추가 -->
-				<button	type="button" id="plusBtn" onclick="plus();">+</button>
-				
-				<select id="selectBox">
-					<option value="기본값">기본값</option>
-				</select>
-				<!-- 게시글 제거 -->
-				<button	type="button" id="minusBtn" onclick="minus();">-</button>
-				
+				<button	type="button" id="plusBtn" onclick="plus();">추가</button>
 				
 				<c:if test="${type == 'write'}"> 
 					<input id="submit" type="button" value="작성 완료">
@@ -215,7 +188,7 @@
 						Title
 						</td>
 						<td width="400">
-						<input name="boardTitle" id="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
+						<input name="boardTitle" class="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
 						</td>
 					</tr>
 					<tr id="cloneTable3" class="cloneTable0">
@@ -223,7 +196,7 @@
 						Comment
 						</td>
 						<td valign="top">
-						<textarea name="boardComment" id="boardComment" rows="20" cols="55">${board.boardComment}</textarea>
+						<textarea name="boardComment" class="boardComment" rows="20" cols="55">${board.boardComment}</textarea>
 						</td>
 					</tr>
 					<tr>
