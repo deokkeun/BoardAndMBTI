@@ -9,37 +9,10 @@
 </head>
 <script type="text/javascript">
 
-	let selectTypeStr = "";
-	/* boardType을 넣어주는 함수 */
-	function changeFn() {
-		/* boardType이 여러개인 경우 */
-		selectTypeStr = "";
-		let selectTypeBox = document.getElementsByName("selectTypeBox");
-		var codeIdArr = document.getElementById("codeIdArr");
-		console.log(selectTypeBox[0].value);
-		for(let i = 0; i < selectTypeBox.length; i++) {
-			selectTypeStr += selectTypeBox[i].value + ",";
-		}
-		codeIdArr.value = selectTypeStr;
-		
-		/* boardType이 한개인 경우 */
-		var codeId = document.getElementById("codeId");
-		var codeIdType = document.getElementById("codeIdType");
-		var selectCodeIdType = (codeIdType.options[codeIdType.selectedIndex].value);
-		codeId.value = selectCodeIdType;
-	}
-	
 	$j(document).ready(function(){
-		
 		const table = document.getElementById("table");
-		const plusBtn = document.getElementById("plusBtn");
-		const minusBtn = document.getElementById("minusBtn");
-		
-		const boardTitle = document.getElementsByClassName("boardTitle");
-		const boardComment = document.getElementsByClassName("boardComment");
 		
 		$j("#submit").on("click",function(){
-			changeFn();
 			var $frm = $j('.boardWrite :input');
 			var param = $frm.serialize();
 			console.log($frm);			
@@ -49,7 +22,7 @@
 			    url : "/board/boardWriteAction.do",
 			    dataType: "json",
 			    type: "POST",
-			    data : param, selectTypeStr,
+			    data : param,
 			    success: function(data, textStatus, jqXHR)
 			    {
 			    	if(data.update == 'Y') {
@@ -78,35 +51,40 @@
 	
 			
 	let classNum = 0;
+	
 	function plus() {
 		const cloneTable1 = document.getElementById("cloneTable1");
 		const cloneTable2 = document.getElementById("cloneTable2");
 		const cloneTable3 = document.getElementById("cloneTable3");
-		
 	  	// 'test' node 선택
 		const tr3 = table.children[0].children[2];
-	  
-	  // 노드 복사하기 (deep copy)
-	  const newNode1 = cloneTable1.cloneNode(true);
-	  const newNode2 = cloneTable2.cloneNode(true);
-	  const newNode3 = cloneTable3.cloneNode(true);
-	  
-	  // 복사된 Node에 class 추가하기
-	  classNum++;
-	  newNode1.classList.add('copyNode' + classNum);
-	  newNode2.classList.add('copyNode' + classNum);
-	  newNode3.classList.add('copyNode' + classNum);
-	  newNode1.innerHTML += '<button type="button" class="minusBtn" onclick="minus(' + classNum + ');">삭제</button>';
-	  
-	  // 복사한 노드 붙여넣기
-	  tr3.after(newNode3);
-	  tr3.after(newNode2);
-	  tr3.after(newNode1);
+		  
+		// 노드 복사하기 (deep copy)
+		const newNode1 = cloneTable1.cloneNode(true);
+		const newNode2 = cloneTable2.cloneNode(true);
+		const newNode3 = cloneTable3.cloneNode(true);
 		
-	  copyNodeCount();
-	  
-		/* type 기본값 배열 생성 */
-		changeFn();
+		// 복사된 노드 내부 입력되어있는 값 제거
+		const inputElement2 = newNode2.querySelector('input[name="boardTitle"]');
+		const inputElement3 = newNode3.querySelector('textarea[name="boardComment"]');
+		if (inputElement2) {
+		    inputElement2.value = '';
+		}
+		if (inputElement3) {
+		    inputElement3.value = '';
+		}
+		
+		// 복사된 Node에 class 추가하기
+		classNum++;
+		newNode1.classList.add('copyNode' + classNum);
+		newNode2.classList.add('copyNode' + classNum);
+		newNode3.classList.add('copyNode' + classNum);
+		newNode1.innerHTML += '<button type="button" onclick="minus(' + classNum + ');">삭제</button>';
+		  
+		// 복사한 노드 붙여넣기
+		tr3.after(newNode3);
+		tr3.after(newNode2);
+		tr3.after(newNode1);
 	}
 	
 	
@@ -116,15 +94,6 @@
 			removeElement[i].remove();
 		}
 			removeElement[0].remove();
-	}
-	
-	
-	function copyNodeCount() {
-		/* 복제된 노드 개수 */
-		const cloneTable0 = (document.getElementsByClassName("cloneTable0").length / 3) - 1;
-		const option = document.createElement("option");
-		option.setAttribute("value", classNum);
-		option.innerText = classNum;
 	}
 	
 </script>
@@ -144,10 +113,7 @@
 	<table align="center">
 		<tr>
 			<td align="right">
-				
-				<!-- 게시글 추가 -->
-				<button	type="button" id="plusBtn" onclick="plus();">추가</button>
-				
+				<button	type="button" onclick="plus();">추가</button>
 				<c:if test="${type == 'write'}"> 
 					<input id="submit" type="button" value="작성 완료">
 				</c:if>
@@ -164,7 +130,7 @@
 						Type
 						</td>
 						<td width="400">
-							<select id="codeIdType" name="selectTypeBox" onchange="changeFn()">
+							<select id="codeIdType" name="selectTypeBox">
 								<c:forEach var="typeList" items="${boardTypeList}" varStatus="status">
 									<c:choose>
 										<c:when test="${!empty board.boardType}">

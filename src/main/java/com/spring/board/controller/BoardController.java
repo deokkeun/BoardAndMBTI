@@ -158,42 +158,26 @@ public class BoardController {
 	
 	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	@ResponseBody
-	public String boardWriteAction(Locale locale, BoardVo boardVo, HttpServletRequest request,
-			@RequestParam(value="codeIdArr", required=false) String codeIdArr) throws Exception{
+	public String boardWriteAction(Locale locale, BoardVo boardVo, HttpServletRequest request) throws Exception{
 		
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
+	
+		String[] selectTypeBox = request.getParameterValues("selectTypeBox");
+		String[] boardTitle= request.getParameterValues("boardTitle");
+		String[] boardComment= request.getParameterValues("boardComment");
 		
-		String[] typeArr;
-		
-		if(codeIdArr.length() > 5) {
-			typeArr = codeIdArr.split(",");
-			String[] boardTitle= request.getParameterValues("boardTitle");
-			String[] boardComment= request.getParameterValues("boardComment");
-			
-			for(int i = 0; i < typeArr.length; i++) {
-				System.out.println("typeArr[i]::"+typeArr[i]);
-				System.out.println("boardTitle[i]::"+boardTitle[i]);
-				System.out.println("boardComment[i]::"+boardComment[i]);
+		for(int i = 0; i < selectTypeBox.length; i++) {
+			System.out.println("selectTypeBox[i]::"+selectTypeBox[i]);
+			System.out.println("boardTitle[i]::"+boardTitle[i]);
+			System.out.println("boardComment[i]::"+boardComment[i]);
 
-				boardVo.setCodeId(typeArr[i]);
-				boardVo.setBoardTitle(boardTitle[i]);
-				boardVo.setBoardComment(boardComment[i]);
-				
-				// update
-				if(boardVo.getType().equals("update")) {
-					int resultCnt = boardService.boardUpdate(boardVo);
-					result.put("update", (resultCnt > 0)?"Y":"N");
-				} else { // insert
-					if(boardVo.getCreator().equals("")) {
-						boardVo.setCreator("SYSTEM");
-					}
-					int resultCnt = boardService.boardInsert(boardVo);
-					result.put("success", (resultCnt > 0)?"Y":"N");
-				}
-			}
-		} else {
-			if(boardVo.getType().equals("update")) { // update
+			boardVo.setCodeId(selectTypeBox[i]);
+			boardVo.setBoardTitle(boardTitle[i]);
+			boardVo.setBoardComment(boardComment[i]);
+			
+			// update
+			if(boardVo.getType().equals("update")) {
 				int resultCnt = boardService.boardUpdate(boardVo);
 				result.put("update", (resultCnt > 0)?"Y":"N");
 			} else { // insert
@@ -204,6 +188,7 @@ public class BoardController {
 				result.put("success", (resultCnt > 0)?"Y":"N");
 			}
 		}
+	
 		String callbackMsg = CommonUtil.getJsonCallBackString(" ",result);
 		System.out.println("callbackMsg::"+callbackMsg);
 		
@@ -219,9 +204,6 @@ public class BoardController {
 		
 		boardVo.setBoardType(boardType);
 		boardVo.setBoardNum(boardNum);
-		System.out.println("boardType::"+boardType);
-		System.out.println(boardNum);
-		System.out.println(type);
 		
 		if(type.equals("delete")) {
 			int result = boardService.boardDelete(boardVo);
