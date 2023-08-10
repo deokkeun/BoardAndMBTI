@@ -156,35 +156,24 @@ public class BoardController {
 		return "board/boardWrite";
 	}
 	
-	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	@ResponseBody
+	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	public String boardWriteAction(Locale locale, BoardVo boardVo, HttpServletRequest request) throws Exception{
 		
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
-	
-		String[] selectTypeBox = request.getParameterValues("selectTypeBox");
-		String[] boardTitle= request.getParameterValues("boardTitle");
-		String[] boardComment= request.getParameterValues("boardComment");
 		
-		for(int i = 0; i < selectTypeBox.length; i++) {
-			System.out.println("selectTypeBox[i]::"+selectTypeBox[i]);
-			System.out.println("boardTitle[i]::"+boardTitle[i]);
-			System.out.println("boardComment[i]::"+boardComment[i]);
-
-			boardVo.setCodeId(selectTypeBox[i]);
-			boardVo.setBoardTitle(boardTitle[i]);
-			boardVo.setBoardComment(boardComment[i]);
+		for(int i = 0; i < boardVo.getBoardVoList().size(); i++) {
 			
 			// update
-			if(boardVo.getType().equals("update")) {
-				int resultCnt = boardService.boardUpdate(boardVo);
+			if(boardVo.getBoardVoList().get(i).getType().equals("update")) {
+				int resultCnt = boardService.boardUpdate(boardVo.getBoardVoList().get(i));
 				result.put("update", (resultCnt > 0)?"Y":"N");
 			} else { // insert
-				if(boardVo.getCreator().equals("")) {
-					boardVo.setCreator("SYSTEM");
+				if(boardVo.getBoardVoList().get(i).getCreator().equals("")) {
+					boardVo.getBoardVoList().get(i).setCreator("SYSTEM");
 				}
-				int resultCnt = boardService.boardInsert(boardVo);
+				int resultCnt = boardService.boardInsert(boardVo.getBoardVoList().get(i));
 				result.put("success", (resultCnt > 0)?"Y":"N");
 			}
 		}

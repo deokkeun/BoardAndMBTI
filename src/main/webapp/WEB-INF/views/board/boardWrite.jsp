@@ -6,6 +6,13 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
 <title>boardWrite</title>
+<style>
+#typeBox {
+	width: 100%;
+	display: flex;
+	justify-content: space-between;
+}
+</style>
 </head>
 <script type="text/javascript">
 
@@ -53,6 +60,10 @@
 	let classNum = 0;
 	
 	function plus() {
+		classNum++;
+		
+		const creator = document.getElementById("creator");
+		const type = document.getElementById("type");
 		const cloneTable1 = document.getElementById("cloneTable1");
 		const cloneTable2 = document.getElementById("cloneTable2");
 		const cloneTable3 = document.getElementById("cloneTable3");
@@ -60,28 +71,39 @@
 		const tr3 = table.children[0].children[2];
 		  
 		// 노드 복사하기 (deep copy)
+		const newNode = creator.cloneNode(true);
+		const newNode0 = type.cloneNode(true);
 		const newNode1 = cloneTable1.cloneNode(true);
 		const newNode2 = cloneTable2.cloneNode(true);
 		const newNode3 = cloneTable3.cloneNode(true);
 		
 		// 복사된 노드 내부 입력되어있는 값 제거
-		const inputElement2 = newNode2.querySelector('input[name="boardTitle"]');
-		const inputElement3 = newNode3.querySelector('textarea[name="boardComment"]');
+		const inputElement1 = newNode1.querySelector('select[name="boardVoList[0].codeId"]');
+		const inputElement2 = newNode2.querySelector('input[name="boardVoList[0].boardTitle"]');
+		const inputElement3 = newNode3.querySelector('textarea[name="boardVoList[0].boardComment"]');
+		const span = document.createElement("span");
+		span.innerHTML += '<button type="button" onclick="minus(' + classNum + ');">삭제</button>';
+		inputElement1.after(span);
 		if (inputElement2) {
 		    inputElement2.value = '';
 		}
 		if (inputElement3) {
 		    inputElement3.value = '';
 		}
+		newNode.setAttribute("name", "boardVoList[" + classNum + "].creator");
+		newNode0.setAttribute("name", "boardVoList[" + classNum + "].type");
+		inputElement1.setAttribute("name", "boardVoList[" + classNum + "].codeId");
+		inputElement2.setAttribute("name", "boardVoList[" + classNum + "].boardTitle");
+		inputElement3.setAttribute("name", "boardVoList[" + classNum + "].boardComment");
 		
 		// 복사된 Node에 class 추가하기
-		classNum++;
 		newNode1.classList.add('copyNode' + classNum);
 		newNode2.classList.add('copyNode' + classNum);
 		newNode3.classList.add('copyNode' + classNum);
-		newNode1.innerHTML += '<button type="button" onclick="minus(' + classNum + ');">삭제</button>';
-		  
+		
 		// 복사한 노드 붙여넣기
+		creator.after(newNode);
+		type.after(newNode0);
 		tr3.after(newNode3);
 		tr3.after(newNode2);
 		tr3.after(newNode1);
@@ -101,14 +123,12 @@
 <form class="boardWrite">
 
 	<c:if test="${type == 'update'}"> 
-		<input name="boardType" type="hidden" value="${boardType}" />
-		<input name="boardNum" type="hidden" value="${boardNum}" />
+		<input name="boardVoList[0].boardType" type="hidden" value="${boardType}" />
+		<input name="boardVoList[0].boardNum" type="hidden" value="${boardNum}" />
 	</c:if>
-
-	<input name="codeId" id="codeId" type="hidden" value="${boardType}" />
-	<input name="codeIdArr" id="codeIdArr" type="hidden" value="${boardType}" />
-	<input name="creator" id="creator" type="hidden" value="${loginMember.userName}" />
-	<input name="type" id="type" type="hidden" value="${type}" />
+	
+	<input name="boardVoList[0].creator" id="creator" type="hidden" value="${loginMember.userName}" />
+	<input name="boardVoList[0].type" id="type" type="hidden" value="${type}" />
 
 	<table align="center">
 		<tr>
@@ -129,8 +149,8 @@
 						<td width="120" align="center">
 						Type
 						</td>
-						<td width="400">
-							<select id="codeIdType" name="selectTypeBox">
+						<td width="400" id="typeBox">
+							<select id="codeIdType" name="boardVoList[0].codeId">
 								<c:forEach var="typeList" items="${boardTypeList}" varStatus="status">
 									<c:choose>
 										<c:when test="${!empty board.boardType}">
@@ -154,7 +174,7 @@
 						Title
 						</td>
 						<td width="400">
-						<input name="boardTitle" class="boardTitle" type="text" size="50" value="${board.boardTitle}"> 
+						<input name="boardVoList[0].boardTitle" class="boardTitle" type="text" size="50" maxlength="16" value="${board.boardTitle}"> 
 						</td>
 					</tr>
 					<tr id="cloneTable3" class="cloneTable0">
@@ -162,7 +182,7 @@
 						Comment
 						</td>
 						<td valign="top">
-						<textarea name="boardComment" class="boardComment" rows="20" cols="55">${board.boardComment}</textarea>
+						<textarea name="boardVoList[0].boardComment" class="boardComment" rows="20" cols="55" maxlength="333">${board.boardComment}</textarea>
 						</td>
 					</tr>
 					<tr>

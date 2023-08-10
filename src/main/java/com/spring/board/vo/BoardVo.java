@@ -1,5 +1,7 @@
 package com.spring.board.vo;
 
+import java.util.List;
+
 public class BoardVo {
 	
 	private String 	boardType;
@@ -15,6 +17,8 @@ public class BoardVo {
 	private String codeId;
 	private String codeName;
 	private String[] mbtiArr;
+	
+	private List<BoardVo> boardVoList;
 	
 	public int getTotalCnt() {
 		return totalCnt;
@@ -93,5 +97,11 @@ public class BoardVo {
 	}
 	public void setModifiedTime(String modifiedTime) {
 		this.modifiedTime = modifiedTime;
+	}
+	public List<BoardVo> getBoardVoList() {
+		return boardVoList;
+	}
+	public void setBoardVoList(List<BoardVo> boardVoList) {
+		this.boardVoList = boardVoList;
 	}
 }
