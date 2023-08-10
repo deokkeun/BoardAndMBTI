@@ -163,18 +163,18 @@ public class BoardController {
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
 		
-		for(int i = 0; i < boardVo.getBoardVoList().size(); i++) {
-			
-			// update
-			if(boardVo.getBoardVoList().get(i).getType().equals("update")) {
-				int resultCnt = boardService.boardUpdate(boardVo.getBoardVoList().get(i));
-				result.put("update", (resultCnt > 0)?"Y":"N");
-			} else { // insert
-				if(boardVo.getBoardVoList().get(i).getCreator().equals("")) {
-					boardVo.getBoardVoList().get(i).setCreator("SYSTEM");
+		for(BoardVo board : boardVo.getBoardVoList()) {
+			if(board.getType() != null) {// (write, update)
+				if(board.getType().equals("update")) { // update
+					int resultCnt = boardService.boardUpdate(board);
+					result.put("update", (resultCnt > 0)?"Y":"N");
+				} else { // insert
+					if(board.getCreator().equals("")) {
+						board.setCreator("SYSTEM");
+					}
+					int resultCnt = boardService.boardInsert(board);
+					result.put("success", (resultCnt > 0)?"Y":"N");
 				}
-				int resultCnt = boardService.boardInsert(boardVo.getBoardVoList().get(i));
-				result.put("success", (resultCnt > 0)?"Y":"N");
 			}
 		}
 	

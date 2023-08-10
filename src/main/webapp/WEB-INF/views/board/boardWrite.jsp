@@ -113,11 +113,15 @@
 	
 	
 	function minus(classNum) {
+		const creator = document.querySelector('input[name="boardVoList[' + classNum + '].creator"]');
+		const type = document.querySelector('input[name="boardVoList[' + classNum + '].type"]');
 		const removeElement = document.getElementsByClassName("copyNode" + classNum);
 		for(let i = 0; i < removeElement.length; i++) {
 			removeElement[i].remove();
 		}
-			removeElement[0].remove();
+		creator.remove();
+		type.remove();
+		removeElement[0].remove();
 	}
 	
 </script>
@@ -135,8 +139,8 @@
 	<table align="center">
 		<tr>
 			<td align="right">
-				<button	type="button" onclick="plus();">추가</button>
 				<c:if test="${type == 'write'}"> 
+					<button	type="button" onclick="plus();">추가</button>
 					<input id="submit" type="button" value="작성 완료">
 				</c:if>
 				<c:if test="${type == 'update'}"> 
