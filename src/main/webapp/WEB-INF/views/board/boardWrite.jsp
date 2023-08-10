@@ -60,6 +60,10 @@
 	let classNum = 0;
 	
 	function plus() {
+		
+	  	const cloneTable = document.getElementsByClassName("copyNode" + classNum);
+	  	const lastCloneTable = cloneTable[cloneTable.length - 1];
+	  	
 		classNum++;
 		
 		const creator = document.getElementById("creator");
@@ -67,8 +71,6 @@
 		const cloneTable1 = document.getElementById("cloneTable1");
 		const cloneTable2 = document.getElementById("cloneTable2");
 		const cloneTable3 = document.getElementById("cloneTable3");
-	  	// 'test' node 선택
-		const tr3 = table.children[0].children[2];
 		  
 		// 노드 복사하기 (deep copy)
 		const newNode = creator.cloneNode(true);
@@ -104,9 +106,9 @@
 		// 복사한 노드 붙여넣기
 		creator.after(newNode);
 		type.after(newNode0);
-		tr3.after(newNode3);
-		tr3.after(newNode2);
-		tr3.after(newNode1);
+		lastCloneTable.after(newNode3);
+		lastCloneTable.after(newNode2);
+		lastCloneTable.after(newNode1);
 	}
 	
 	
@@ -145,7 +147,7 @@
 		<tr>
 			<td>
 				<table border ="1" id="table"> 
-					<tr id="cloneTable1" class="cloneTable0">
+					<tr id="cloneTable1" class="cloneTable0 copyNode0">
 						<td width="120" align="center">
 						Type
 						</td>
@@ -169,7 +171,7 @@
 							</select>
 						</td>
 					</tr>
-					<tr id="cloneTable2" class="cloneTable0">
+					<tr id="cloneTable2" class="cloneTable0 copyNode0">
 						<td width="120" align="center">
 						Title
 						</td>
@@ -177,7 +179,7 @@
 						<input name="boardVoList[0].boardTitle" class="boardTitle" type="text" size="50" maxlength="16" value="${board.boardTitle}"> 
 						</td>
 					</tr>
-					<tr id="cloneTable3" class="cloneTable0">
+					<tr id="cloneTable3" class="cloneTable0 copyNode0">
 						<td height="300" align="center">
 						Comment
 						</td>
