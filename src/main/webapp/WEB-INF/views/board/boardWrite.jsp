@@ -16,24 +16,55 @@
 </head>
 <script type="text/javascript">
 
+	let classNum = 0;
+
+
 	$j(document).ready(function(){
+		
 		const table = document.getElementById("table");
 		
 		$j("#submit").on("click",function(){
-			var $frm = $j('.boardWrite :input');
+			
+			const boardTitle = document.getElementsByClassName("boardTitle");
+			for(let title of boardTitle) {
+				if(title.value.length == 0) {
+					alert("제목을 입력해주세요.");
+					title.focus();
+					return false;
+				}
+			}
+			
+			
+			
+		    // name이 같은 값들을 배열에 담는다.
+		    let boardVoList = {};
+		    
+		    for(let i = 0; i <= classNum; i++) {
+		    	if(document.querySelector('input[name="boardVoList[' + i + '].boardType"]') != null) {
+		    		boardVoList["boardVoList[" + i + "].boardType"] = document.querySelector('input[name="boardVoList[' + i + '].boardType"]').value;
+		    		boardVoList["boardVoList[" + i + "].boardNum"] = document.querySelector('input[name="boardVoList[' + i + '].boardNum"]').value;
+		    	}
+		    		boardVoList["boardVoList[" + i + "].creator"] = document.querySelector('input[name="boardVoList[' + i + '].creator"]').value;
+		    		boardVoList["boardVoList[" + i + "].type"] = document.querySelector('input[name="boardVoList[' + i + '].type"]').value;
+		    		boardVoList["boardVoList[" + i + "].codeId"] = document.querySelector('select[name="boardVoList[' + i + '].codeId"]').value;
+		    		boardVoList["boardVoList[" + i + "].boardTitle"] = document.querySelector('input[name="boardVoList[' + i + '].boardTitle"]').value;
+		    		boardVoList["boardVoList[" + i + "].boardComment"] = document.querySelector('textarea[name="boardVoList[' + i + '].boardComment"]').value;
+		    }
+		    
+		/* 	var $frm = $j('.boardWrite :input');
 			var param = $frm.serialize();
 			console.log($frm);			
-			console.log(param);
+			console.log("param"+param); */
 			
 			$j.ajax({
 			    url : "/board/boardWriteAction.do",
 			    dataType: "json",
 			    type: "POST",
-			    data : param,
+			    data : boardVoList,
 			    success: function(data, textStatus, jqXHR)
 			    {
 			    	if(data.update == 'Y') {
-			    		console.log(param);
+			    		/* console.log(param); */
 			    		console.log(data);
 						alert("수정완료");
 						console.log(data);
@@ -55,13 +86,11 @@
 			});
 		});
 	}); /* $j(document).ready(function() 끝 */
-	
-			
-	let classNum = 0;
+
 	
 	function plus() {
 		
-	  	const cloneTable = document.getElementsByClassName("copyNode" + classNum);
+	  	const cloneTable = document.getElementsByClassName("cloneTable0");
 	  	const lastCloneTable = cloneTable[cloneTable.length - 1];
 	  	
 		classNum++;
@@ -156,19 +185,19 @@
 						Type
 						</td>
 						<td width="400" id="typeBox">
-							<select id="codeIdType" name="boardVoList[0].codeId">
+							<select id="codeId" name="boardVoList[0].codeId">
 								<c:forEach var="typeList" items="${boardTypeList}" varStatus="status">
 									<c:choose>
 										<c:when test="${!empty board.boardType}">
 											<c:if test="${board.boardType.equals(typeList.codeId)}">
-												<option name="codeIdType" value="${board.boardType}" selected>${board.codeName}</option>
+												<option name="codeId" value="${board.boardType}" selected>${board.codeName}</option>
 											</c:if>
 											<c:if test="${!board.boardType.equals(typeList.codeId)}">
-												<option name="codeIdType" value="${typeList.codeId}">${typeList.codeName}</option>
+												<option name="codeId" value="${typeList.codeId}">${typeList.codeName}</option>
 											</c:if>
 										</c:when>
 										<c:otherwise>
-											<option name="codeIdType" value="${typeList.codeId}">${typeList.codeName}</option>
+											<option name="codeId" value="${typeList.codeId}">${typeList.codeName}</option>
 										</c:otherwise>
 									</c:choose>
 								</c:forEach>

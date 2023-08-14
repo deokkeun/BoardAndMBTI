@@ -160,6 +160,9 @@ public class BoardController {
 	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	public String boardWriteAction(Locale locale, BoardVo boardVo, HttpServletRequest request) throws Exception{
 		
+		System.out.println("boardVo::"+boardVo);
+		System.out.println("boardVo::"+boardVo.getBoardVoList().get(0).getBoardTitle());
+		
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
 		
@@ -186,13 +189,8 @@ public class BoardController {
 	
 	@RequestMapping(value = "/board/{boardType}/{boardNum}/boardDelete.do", method = RequestMethod.GET)
 	public String boardWrite(Locale locale, Model model, BoardVo boardVo
-			,@PathVariable("boardType") String boardType
-			,@PathVariable("boardNum") int boardNum
 			,@RequestParam(value="type", required=false) String type
 			,RedirectAttributes ra) throws Exception {
-		
-		boardVo.setBoardType(boardType);
-		boardVo.setBoardNum(boardNum);
 		
 		if(type.equals("delete")) {
 			int result = boardService.boardDelete(boardVo);
