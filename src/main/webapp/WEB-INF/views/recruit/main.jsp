@@ -34,7 +34,9 @@
 	let tr3Num = 0; /* 자격증 테이블 총 개수 (추가 / 삭제) */
 	
 	$j(document).ready(function(){
-		tr1Num = $j(".tr1CheckBox").last().val();
+		if($j(".tr1CheckBox").last().val() > 0) {			
+			tr1Num = $j(".tr1CheckBox").last().val();
+		}
 		
 		/* ************** 제출 했을 경우 비활성화 ************** */
 		const submit = document.getElementById("submit");
@@ -80,11 +82,11 @@
 				for(let i = 0; i < input.length; i++) {
 					input[i].value = "";
 				}
-				input[2].setAttribute("name", "educationVoList[" + tr1Num + "].startPeriod");
-				input[3].setAttribute("name", "educationVoList[" + tr1Num + "].endPeriod");
-				input[4].setAttribute("name", "educationVoList[" + tr1Num + "].schoolName");
-				input[5].setAttribute("name", "educationVoList[" + tr1Num + "].major");
-				input[6].setAttribute("name", "educationVoList[" + tr1Num + "].grade");
+				input[1].setAttribute("name", "educationVoList[" + tr1Num + "].startPeriod");
+				input[2].setAttribute("name", "educationVoList[" + tr1Num + "].endPeriod");
+				input[3].setAttribute("name", "educationVoList[" + tr1Num + "].schoolName");
+				input[4].setAttribute("name", "educationVoList[" + tr1Num + "].major");
+				input[5].setAttribute("name", "educationVoList[" + tr1Num + "].grade");
 				select[0].setAttribute("name", "educationVoList[" + tr1Num + "].division");
 				select[1].setAttribute("name", "educationVoList[" + tr1Num + "].location");
 			
