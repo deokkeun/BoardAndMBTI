@@ -160,9 +160,6 @@ public class BoardController {
 	@RequestMapping(value = "/board/boardWriteAction.do", method = RequestMethod.POST)
 	public String boardWriteAction(Locale locale, BoardVo boardVo, HttpServletRequest request) throws Exception{
 		
-		System.out.println("boardVo::"+boardVo);
-		System.out.println("boardVo::"+boardVo.getBoardVoList().get(0).getBoardTitle());
-		
 		HashMap<String, String> result = new HashMap<String, String>();
 		CommonUtil commonUtil = new CommonUtil();
 		

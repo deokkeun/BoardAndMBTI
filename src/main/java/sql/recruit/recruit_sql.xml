@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="recruit">
+
+    <resultMap type="com.spring.recruit.vo.RecruitVo" id="recruitVo">
+    	<id 	property="seq" 		column="SEQ"/>
+    	<result property="name" 	column="NAME"/>
+    	<result property="birth" 	column="BIRTH"/>
+    	<result property="gender" 	column="GENDER"/>
+	    <result property="phone" 	column="PHONE"/>
+    	<result property="email" 	column="EMAIL"/>
+    	<result property="addr" 	column="ADDR"/>
+    	<result property="location" column="LOCATION"/>
+    	<result property="workType" column="WORK_TYPE"/>
+    	<result property="submit" 	column="SUBMIT"/>
+    </resultMap>
+    
+    <resultMap type="com.spring.recruit.vo.EducationVo" id="educationVo">
+    	<id 	property="eduSeq" 		column="EDU_SEQ"/>
+    	<result property="seq" 			column="SEQ"/>
+    	<result property="startPeriod" 	column="START_PERIOD"/>
+    	<result property="endPeriod" 	column="END_PERIOD"/>
+	    <result property="division" 	column="DIVISION"/>
+    	<result property="schoolName" 	column="SCHOOL_NAME"/>
+    	<result property="location" 	column="LOCATION"/>
+    	<result property="major" 		column="MAJOR"/>
+    	<result property="grade" 		column="GRADE"/>
+    </resultMap>
+    
+    
+    <select id="main" parameterType="com.spring.recruit.vo.RecruitVo" resultMap="recruitVo">
+		SELECT SEQ, NAME, BIRTH, GENDER, PHONE, EMAIL, ADDR, LOCATION, WORK_TYPE, SUBMIT
+		FROM RECRUIT
+		WHERE NAME = #{name}
+		AND PHONE = #{phone}
+    </select>
+  
+    <insert id="insertInfo" parameterType="com.spring.recruit.vo.RecruitVo" useGeneratedKeys="true">
+	    <selectKey keyProperty="seq" resultType="string" order="BEFORE">
+	        SELECT TO_CHAR(SEQ_NO.NEXTVAL) FROM DUAL
+	    </selectKey>
+	    INSERT INTO RECRUIT(SEQ, NAME, BIRTH, GENDER, PHONE, EMAIL, ADDR, LOCATION, WORK_TYPE, SUBMIT)
+	    VALUES(#{seq}, #{name}, DEFAULT, DEFAULT, #{phone}, DEFAULT, DEFAULT, DEFAULT, DEFAULT, 'FALSE')
+	</insert>
+	
+	<update id="updateRecruit" parameterType="com.spring.recruit.vo.RecruitVo">
+		UPDATE RECRUIT 
+		SET NAME = #{name},
+			BIRTH = #{birth},
+			GENDER = #{gender},
+			PHONE = #{phone},
+			EMAIL = #{email},
+			ADDR = #{addr},
+			LOCATION = #{location},
+			WORK_TYPE = #{workType},
+			SUBMIT = #{submit}
+		WHERE SEQ = #{seq}
+	</update>
+    
+    <select id="educationVoList" parameterType="com.spring.recruit.vo.EducationVo" resultMap="educationVo">
+	    SELECT EDU_SEQ, SEQ, SCHOOL_NAME, DIVISION, START_PERIOD, END_PERIOD, MAJOR, GRADE, LOCATION 
+		FROM EDUCATION
+		WHERE SEQ = #{seq}
+    </select>
+
+	<insert id="insertEducation" parameterType="com.spring.recruit.vo.EducationVo" useGeneratedKeys="true">
+	   	<selectKey keyProperty="eduSeq" resultType="string" order="BEFORE">
+       		SELECT TO_CHAR(EDU_SEQ_NO.NEXTVAL) FROM DUAL
+    	</selectKey>
+		INSERT INTO EDUCATION(EDU_SEQ, SEQ, SCHOOL_NAME, DIVISION, START_PERIOD, END_PERIOD, MAJOR, GRADE, LOCATION) 
+		VALUES(#{eduSeq}, #{seq}, #{schoolName}, #{division}, #{startPeriod}, #{endPeriod}, #{major}, #{grade}, #{location})
+	</insert>
+	
+	<update id="updateEducation" parameterType="com.spring.recruit.vo.EducationVo">
+		UPDATE EDUCATION
+		SET SCHOOL_NAME = #{schoolName},
+			DIVISION = #{division},
+			START_PERIOD = #{startPeriod},
+			END_PERIOD = #{endPeriod},
+			MAJOR = #{major},
+			GRADE = #{grade},
+			LOCATION = #{location}
+		WHERE SEQ = #{seq}
+		AND EDU_SEQ = #{eduSeq}
+	</update>
+	
+	<select id="selectEduSeq" parameterType="com.spring.recruit.vo.EducationVo" resultType="string">
+		SELECT EDU_SEQ FROM EDUCATION WHERE SEQ = #{seq}
+	</select>
+	
+	
+</mapper>

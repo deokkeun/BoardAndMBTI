@@ -39,16 +39,21 @@
 		    // name이 같은 값들을 배열에 담는다.
 		    let boardVoList = {};
 		    
+		    /* UPDATE */
+	    	if(document.querySelector('input[name="boardVoList[0].boardType"]') != null) {
+	    		boardVoList["boardVoList[0].boardType"] = document.querySelector('input[name="boardVoList[0].boardType"]').value;
+	    		boardVoList["boardVoList[0].boardNum"] = document.querySelector('input[name="boardVoList[0].boardNum"]').value;
+	    	}
+	    	
+		    /* INSERT */
 		    for(let i = 0; i <= classNum; i++) {
-		    	if(document.querySelector('input[name="boardVoList[' + i + '].boardType"]') != null) {
-		    		boardVoList["boardVoList[" + i + "].boardType"] = document.querySelector('input[name="boardVoList[' + i + '].boardType"]').value;
-		    		boardVoList["boardVoList[" + i + "].boardNum"] = document.querySelector('input[name="boardVoList[' + i + '].boardNum"]').value;
-		    	}
+		    	if(document.querySelector('input[name="boardVoList[' + i + '].creator"]') != null && document.querySelector('input[name="boardVoList[' + i + '].type"]') != null) {
 		    		boardVoList["boardVoList[" + i + "].creator"] = document.querySelector('input[name="boardVoList[' + i + '].creator"]').value;
 		    		boardVoList["boardVoList[" + i + "].type"] = document.querySelector('input[name="boardVoList[' + i + '].type"]').value;
 		    		boardVoList["boardVoList[" + i + "].codeId"] = document.querySelector('select[name="boardVoList[' + i + '].codeId"]').value;
 		    		boardVoList["boardVoList[" + i + "].boardTitle"] = document.querySelector('input[name="boardVoList[' + i + '].boardTitle"]').value;
 		    		boardVoList["boardVoList[" + i + "].boardComment"] = document.querySelector('textarea[name="boardVoList[' + i + '].boardComment"]').value;
+				}
 		    }
 		    
 		/* 	var $frm = $j('.boardWrite :input');
