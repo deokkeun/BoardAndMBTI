@@ -12,6 +12,11 @@ public class RecruitVo {
 	private String location;
 	private String workType;
 	private String submit;
+	private String deleteNo1;
+	private String deleteNo2;
+	private String deleteNo3;
+	
+	
 	
 	
 	public String getSeq() {
@@ -73,6 +78,24 @@ public class RecruitVo {
 	}
 	public void setSubmit(String submit) {
 		this.submit = submit;
+	}
+	public String getDeleteNo1() {
+		return deleteNo1;
+	}
+	public void setDeleteNo1(String deleteNo1) {
+		this.deleteNo1 = deleteNo1;
+	}
+	public String getDeleteNo2() {
+		return deleteNo2;
+	}
+	public void setDeleteNo2(String deleteNo2) {
+		this.deleteNo2 = deleteNo2;
+	}
+	public String getDeleteNo3() {
+		return deleteNo3;
+	}
+	public void setDeleteNo3(String deleteNo3) {
+		this.deleteNo3 = deleteNo3;
 	}
 
 	

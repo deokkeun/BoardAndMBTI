@@ -13,6 +13,7 @@ public class EducationVo {
 	private String location;
 	private String major;
 	private String grade;
+	private String deleteNo;
 	private List<EducationVo> educationVoList;
 	
 	public String getEduSeq() {
@@ -74,6 +75,12 @@ public class EducationVo {
 	}
 	public void setEducationVoList(List<EducationVo> educationVoList) {
 		this.educationVoList = educationVoList;
+	}
+	public String getDeleteNo() {
+		return deleteNo;
+	}
+	public void setDeleteNo(String deleteNo) {
+		this.deleteNo = deleteNo;
 	}
 
 }

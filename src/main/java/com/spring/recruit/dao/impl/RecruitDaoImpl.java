@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.spring.recruit.dao.RecruitDao;
+import com.spring.recruit.vo.CareerVo;
+import com.spring.recruit.vo.CertificateVo;
 import com.spring.recruit.vo.EducationVo;
 import com.spring.recruit.vo.RecruitVo;
 
@@ -56,5 +58,65 @@ public class RecruitDaoImpl implements RecruitDao{
 	public List<String> selectEduSeq(String seq) throws Exception {
 		// TODO Auto-generated method stub
 		return sqlSession.selectList("recruit.selectEduSeq", seq);
+	}
+
+	@Override
+	public int deleteTable1(String str) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("recruit.deleteTable1", str);
+	}
+
+	@Override
+	public int submit(String seq) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.update("recruit.submit", seq);
+	}
+
+	@Override
+	public int insertCareer(CareerVo career) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.insert("recruit.insertCareer", career);
+	}
+
+	@Override
+	public int insertCertificate(CertificateVo certificate) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.insert("recruit.insertCertificate", certificate);
+	}
+
+	@Override
+	public List<CareerVo> careerVoList(String seq) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList("recruit.careerVoList", seq);
+	}
+
+	@Override
+	public List<CertificateVo> certificateVoList(String seq) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectList("recruit.certificateVoList", seq);
+	}
+
+	@Override
+	public int deleteTable2(String str) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("recruit.deleteTable2", str);
+	}
+
+	@Override
+	public int deleteTable3(String str) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.delete("recruit.deleteTable3", str);
+	}
+
+	@Override
+	public int updateCareer(CareerVo career) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.update("recruit.updateCareer", career);
+	}
+
+	@Override
+	public int updateCertificate(CertificateVo certificate) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.update("recruit.updateCertificate", certificate);
 	}
 }

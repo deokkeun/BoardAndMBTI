@@ -27,6 +27,25 @@
     	<result property="grade" 		column="GRADE"/>
     </resultMap>
     
+    <resultMap type="com.spring.recruit.vo.CareerVo" id="careerVo">
+    	<id 	property="carSeq" 		column="CAR_SEQ"/>
+    	<result property="seq" 			column="SEQ"/>
+    	<result property="compName" 	column="COMP_NAME"/>
+    	<result property="location" 	column="LOCATION"/>
+	    <result property="startPeriod" 	column="START_PERIOD"/>
+    	<result property="endPeriod" 	column="END_PERIOD"/>
+    	<result property="task" 	column="TASK"/>
+    	<result property="salary" 		column="SALARY"/>
+    </resultMap>
+    
+    <resultMap type="com.spring.recruit.vo.CertificateVo" id="certificateVo">
+    	<id 	property="certSeq" 		column="CERT_SEQ"/>
+    	<result property="seq" 			column="SEQ"/>
+    	<result property="qualifiName" 	column="QUALIFI_NAME"/>
+    	<result property="acquDate" 	column="ACQU_DATE"/>
+	    <result property="organizeName" 	column="ORGANIZE_NAME"/>
+    </resultMap>
+    
     
     <select id="main" parameterType="com.spring.recruit.vo.RecruitVo" resultMap="recruitVo">
 		SELECT SEQ, NAME, BIRTH, GENDER, PHONE, EMAIL, ADDR, LOCATION, WORK_TYPE, SUBMIT
@@ -45,16 +64,16 @@
 	
 	<update id="updateRecruit" parameterType="com.spring.recruit.vo.RecruitVo">
 		UPDATE RECRUIT 
-		SET NAME = #{name},
-			BIRTH = #{birth},
+		SET BIRTH = #{birth},
 			GENDER = #{gender},
-			PHONE = #{phone},
 			EMAIL = #{email},
 			ADDR = #{addr},
 			LOCATION = #{location},
 			WORK_TYPE = #{workType},
 			SUBMIT = #{submit}
 		WHERE SEQ = #{seq}
+		AND NAME = #{name}
+		AND PHONE = #{phone}
 	</update>
     
     <select id="educationVoList" parameterType="com.spring.recruit.vo.EducationVo" resultMap="educationVo">
@@ -88,5 +107,69 @@
 		SELECT EDU_SEQ FROM EDUCATION WHERE SEQ = #{seq}
 	</select>
 	
+	<delete id="deleteTable1" parameterType="string">
+		DELETE FROM EDUCATION WHERE EDU_SEQ = #{str}
+	</delete>
+	
+	<update id="submit" parameterType="string">
+		UPDATE RECRUIT SET SUBMIT = 'TRUE' WHERE SEQ = #{seq}
+	</update>
+	
+	<insert id="insertCareer" parameterType="com.spring.recruit.vo.CareerVo" useGeneratedKeys="true">
+	 	<selectKey keyProperty="carSeq" resultType="string" order="BEFORE">
+       		SELECT TO_CHAR(CAR_SEQ_NO.NEXTVAL) FROM DUAL
+    	</selectKey>
+		INSERT INTO CAREER(CAR_SEQ, SEQ, COMP_NAME, LOCATION, START_PERIOD, END_PERIOD, TASK, SALARY) 
+		VALUES(#{carSeq}, #{seq}, #{compName}, #{location}, #{startPeriod}, #{endPeriod}, #{task}, #{salary})
+	</insert>
+	
+	<insert id="insertCertificate" parameterType="com.spring.recruit.vo.CertificateVo" useGeneratedKeys="true">
+	 	<selectKey keyProperty="certSeq" resultType="string" order="BEFORE">
+       		SELECT TO_CHAR(CERT_SEQ_NO.NEXTVAL) FROM DUAL
+    	</selectKey>
+		INSERT INTO CERTIFICATE(CERT_SEQ, SEQ, QUALIFI_NAME, ACQU_DATE, ORGANIZE_NAME) 
+		VALUES(#{certSeq}, #{seq}, #{qualifiName}, #{acquDate}, #{organizeName})
+	</insert>
+	
+	<select id="careerVoList" parameterType="com.spring.recruit.vo.CareerVo" resultMap="careerVo">
+		SELECT CAR_SEQ, SEQ, COMP_NAME, LOCATION, START_PERIOD, END_PERIOD, TASK, SALARY
+		FROM CAREER
+		WHERE SEQ = #{seq}
+	</select>
+	
+	<select id="certificateVoList" parameterType="com.spring.recruit.vo.CertificateVo" resultMap="certificateVo">
+		SELECT CERT_SEQ, SEQ, QUALIFI_NAME, ACQU_DATE, ORGANIZE_NAME
+		FROM CERTIFICATE
+		WHERE SEQ = #{seq}
+	</select>
+	
+	<delete id="deleteTable2" parameterType="string">
+		DELETE FROM CAREER WHERE CAR_SEQ = #{str}
+	</delete>
+	
+	<delete id="deleteTable3" parameterType="string">
+		DELETE FROM CERTIFICATE WHERE CERT_SEQ = #{str}
+	</delete>
+	
+	<update id="updateCareer" parameterType="com.spring.recruit.vo.CareerVo">
+		UPDATE CAREER
+		SET COMP_NAME = #{compName},
+		    LOCATION = #{location},
+		    START_PERIOD = #{startPeriod},
+		    END_PERIOD = #{endPeriod},
+		    TASK = #{task},
+		    SALARY = #{salary}
+		WHERE SEQ = #{seq}
+		AND CAR_SEQ = #{carSeq}
+	</update>
+	
+	<update id="updateCertificate" parameterType="com.spring.recruit.vo.CertificateVo">
+		UPDATE CERTIFICATE
+		SET QUALIFI_NAME = #{qualifiName},
+		    ACQU_DATE = #{acquDate},
+		    ORGANIZE_NAME = #{organizeName}
+		WHERE SEQ = #{seq}
+		AND CERT_SEQ = #{certSeq}
+	</update>
 	
 </mapper>

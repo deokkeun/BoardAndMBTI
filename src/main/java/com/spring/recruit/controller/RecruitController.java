@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.spring.board.HomeController;
 import com.spring.recruit.service.RecruitService;
+import com.spring.recruit.vo.CareerVo;
+import com.spring.recruit.vo.CertificateVo;
 import com.spring.recruit.vo.EducationVo;
 import com.spring.recruit.vo.RecruitVo;
 
@@ -41,22 +43,23 @@ public class RecruitController {
 		recruitVo.setName(uni2ksc(recruitVo.getName()));
 		RecruitVo recruit = recruitService.main(recruitVo); // select
 	
-		System.out.println("recruit::"+recruit);
-		
 		if(recruit == null) { // insert
-			System.out.println("recruit=null::"+recruit);
-			System.out.println("recruitVo.getName::"+recruitVo.getName());
-			System.out.println("recruitVo.getName::"+recruitVo.getPhone());
 			int result = recruitService.insertInfo(recruitVo);
-			if(result > 0) { // insert Success
-				System.out.println("recruitVo.getName::"+recruitVo.getName());
-				System.out.println("recruitVo.getName::"+recruitVo.getPhone());
+			if(result > 0) { // insert Success(select)
 				recruit = recruitService.main(recruitVo);
 			}
 		} else {
 			if(recruit.getSeq() != null) {
 				List<EducationVo> educationVoList = recruitService.educationVoList(recruit.getSeq()); // select
 				model.addAttribute("educationVoList", educationVoList);
+				List<CareerVo> careerVoList = recruitService.careerVoList(recruit.getSeq()); // select
+				if(careerVoList.size() != 0) {
+					model.addAttribute("careerVoList", careerVoList);
+				}
+				List<CertificateVo> certificateVoList = recruitService.certificateVoList(recruit.getSeq()); // select
+				if(certificateVoList.size() != 0) {
+					model.addAttribute("certificateVoList", certificateVoList);
+				}
 			}
 		}
 		model.addAttribute("recruit", recruit);
@@ -67,65 +70,99 @@ public class RecruitController {
 	// 저장
 	@ResponseBody
 	@RequestMapping(value = "/save.do", method = RequestMethod.POST)
-	public int save(Model model, RecruitVo recruitVo, EducationVo educationVo) throws Exception {
-
-
+	public int save(Model model, RecruitVo recruitVo, EducationVo educationVo, CareerVo careerVo, CertificateVo certificateVo) throws Exception {
+		
+		String[] deleteNo1 = recruitVo.getDeleteNo1().split(",");
+		String[] deleteNo2 = recruitVo.getDeleteNo2().split(",");
+		String[] deleteNo3 = recruitVo.getDeleteNo3().split(",");
+		
+		if(deleteNo1.length != 0) { // education
+			System.out.println("delete1::"+deleteNo1.length);
+			for(int i = 0; i < deleteNo1.length; i++) {
+				int delete1 = recruitService.deleteTable1(deleteNo1[i]);
+			}
+		}
+		if(deleteNo2.length != 0) { //career
+			for(int i = 0; i < deleteNo2.length; i++) {
+				int delete2 = recruitService.deleteTable2(deleteNo2[i]);
+			}
+		}
+		if(deleteNo3.length != 0) { // certificate
+			for(int i = 0; i < deleteNo3.length; i++) {
+				int delete3 = recruitService.deleteTable3(deleteNo3[i]);
+			}
+		}
+		
+		// recruit 테이블
 		int updateRecruit = recruitService.updateRecruit(recruitVo); // update
 		if(updateRecruit > 0) {
 			RecruitVo recruit = recruitService.main(recruitVo);
 			model.addAttribute("recruit", recruit);
-			System.out.println("updateRecruit::"+updateRecruit);
 		}
 		
-		
+		// education 테이블
 		int result = 0;
 		if(educationVo.getEducationVoList() != null) {
-			
-			// 저장시 삭제
-			List<String> eduSeqList = recruitService.selectEduSeq(recruitVo.getSeq());
-			
 			for(EducationVo education : educationVo.getEducationVoList()) {
-				System.out.println("eduSeqList.contains(education.getEduSeq())::"+eduSeqList.contains(education.getEduSeq()));
-			
 				
-				education.setSeq(recruitVo.getSeq());
-				
-				if(education != null) {
+				if(education.getDivision() != null) {
+					education.setSeq(recruitVo.getSeq());
+					
 					if(education.getEduSeq() != null) { // update
-						System.out.println("update");
 						result = recruitService.updateEducation(education);
 					} else { // insert
-						System.out.println("insert");
 						result = recruitService.insertEducation(education);
 					}
 				} 
-				System.out.println("result::"+result);
 			}
-			
 		}
 		
+		// career 테이블
+		if(careerVo.getCareerVoList() != null) {
+			for(CareerVo career : careerVo.getCareerVoList()) {
+				if(career.getCompName() != null) {
+					career.setSeq(recruitVo.getSeq());
+					
+					if(career.getCarSeq() != null) { // update
+						int careerResult = recruitService.updateCareer(career);
+					} else { // insert
+						if(career.getLocation() == null) {
+							career.setLocation("");
+						}
+						int careerResult = recruitService.insertCareer(career);
+					}
+				}
+			}
+		}
+		
+		// certificate 테이블
+		if(certificateVo.getCertificateVoList() != null) {
+			for(CertificateVo certificate : certificateVo.getCertificateVoList()) {
+				if(certificate.getQualifiName() != null) {
+					certificate.setSeq(recruitVo.getSeq());
+					
+					if(certificate.getCertSeq() != null) { // update
+						int certificateResult = recruitService.updateCertificate(certificate);
+					} else { // insert
+						int certificateResult = recruitService.insertCertificate(certificate);
+					}
+				}
+			}
+		}
 		return result;
 	}
 	
 	// 제출
 	@RequestMapping(value = "/submit.do", method = RequestMethod.POST)
 	public String submit(RecruitVo recruitVo, Model model) throws Exception {
-		System.out.println("recruit::"+recruitVo.getName());
-		System.out.println("recruit::"+recruitVo.getAddr());
-		System.out.println("recruit::"+recruitVo.getBirth());
-		System.out.println("recruit::"+recruitVo.getEmail());
-		System.out.println("recruit::"+recruitVo.getGender());
-		System.out.println("recruit::"+recruitVo.getLocation());
-		System.out.println("recruit::"+recruitVo.getPhone());
-		System.out.println("recruit::"+recruitVo.getSeq());
-		System.out.println("recruit::"+recruitVo.getSubmit());
-		System.out.println("recruit::"+recruitVo.getWorkType());
+		
+		
+		int result = recruitService.submit(recruitVo.getSeq());
 		
 		model.addAttribute("message", "제출 완료!");
 		
-		return "recruit/main";
+		return "recruit/login";
 	}
-	
 	
 	
 	// 유니코드를 한글코드로 변환
