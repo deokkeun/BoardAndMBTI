@@ -32,7 +32,6 @@
 </head>
 <script type="text/javascript">
 
-
 	function recruitValidate() {
 		if(confirm("제출하시면 수정이 되지 않습니다.")) {
 			return true;
@@ -57,13 +56,12 @@
 		    alert("숫자만 입력해주세요.");
 		  }
 	};
+	
 	/* 5번째 - 대체 */
  	function checkDotCode(event) {
 		  const regExp = /^[\d]{4}$/;
-		 /*  const regExp = /^[\d]{4}[^\.]{1}$/; */
-		/*   const regExp1 = /^[\d]{4}[\.]{1}$/; */
-		  
 		  const ele = event.target;
+		  
 		  if (regExp.test(ele.value)) {
 				const today = new Date();
 				console.log(today.getFullYear());
@@ -82,12 +80,11 @@
 			            	}
 			            }
 				    });
-				   /*  ele.value = ele.value.replace(regExp1, ele.value); */
 				}
-				
 		  }
 	};
 
+	/* 숫자만 입력 */
 	function checkNumberCode(event) {
 		  const regExp = /[^0-9]/g;
 		  const ele = event.target;
@@ -95,18 +92,92 @@
 		    ele.value = ele.value.replace(regExp, '');
 		  }
 	};
+	/* 주소용(한글, 숫자)만 입력 */
+	function checkKoreaAddrCode(event) {
+		  const regExp = /[^\u3131-\u318E\uAC00-\uD7A30-9\s]/g;
+		  const ele = event.target;
+		  if (regExp.test(ele.value)) {
+		    ele.value = ele.value.replace(regExp, '');
+		  }
+	};
+	/* 한글만 입력 */
+	function checkKoreaCode(event) {
+		  const regExp = /[^\u3131-\u318E\uAC00-\uD7A3\s]/g;
+		  const ele = event.target;
+		  if (regExp.test(ele.value)) {
+		    ele.value = ele.value.replace(regExp, '');
+		  }
+	};
+
 	
 	$j(document).ready(function(){
-
+		
+		/* 이메일 유효성 검사 */
+/* 		$j("#email").on("input", e => {
+			regExp = /^[\w\-\_]{4,}@[\w\-\_]+(\.\w+){1,3}$/;
+			if(regExp.test(e.target.value)) {
+				e.target.style.border = "1px solid green";
+				e.target.style.outline = "1px solid green";
+				return true;
+			} else {
+				if(e.target.value.length == 0) {
+					e.target.style.border = "1px solid blue";
+					e.target.style.outline = "1px solid blue";
+				} else {
+					e.target.style.border = "1px solid red";
+					e.target.style.outline = "1px solid red";
+				}
+			}
+			e.target.focus();
+			return false;
+		}); */
+		
+		
+		/* 생년월일 유효성 검사 */
 		$j("#birth").on("input", e => {
 			checkNumberCode(e);
-		})
+/* 			regExp = /^([0-9][0-9])(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/;
+			if(regExp.test(e.target.value)) {
+				e.target.style.border = "1px solid green";
+				e.target.style.outline = "1px solid green";
+				return true;
+			} else {
+				if(e.target.value.length == 0) {
+					e.target.style.border = "1px solid blue";
+					e.target.style.outline = "1px solid blue";
+				} else {
+					e.target.style.border = "1px solid red";
+					e.target.style.outline = "1px solid red";
+				}
+			}
+			e.target.focus();
+			return false; */
+		});
 		
+		/* 주소(영어 입력 방지) */
+		$j("#addr").on("input", e => {
+			checkKoreaAddrCode(e);
+		});
+		
+		/* 한글만 입력 (영어, 숫자 입력 방지) */
+		$j(".checkKorea").on("input", e => {
+			checkKoreaCode(e);
+		});
+		
+		/* 기간 입력 유효성 검사 */
 		$j(".dateType").on("input", e => {
+			console.log("기간");
 			checkDateCode(e);
 			
 	    	if(e.target.value.length == 4) {
 	    		checkDotCode(e);
+	    	}
+	    	
+	    	if(e.target.value.length == 5) {
+	    		console.log(e.target.value.substr(4,1));
+	    		if(e.target.value.substr(4, 1) != '.') {
+	    			e.target.value = e.target.value.substr(0, 4) + '.';
+	    		}
 	    	}
 	    	
 			 const regExp = /^[\d]{4}[\.]{1}[\d]{2}$/;
@@ -161,7 +232,7 @@
 	    			alert("YYYY.MM 형식으로 입력해주세요.");
     			}
 	    	}
-		})
+		}); /* 기간 입력 유효성 검사 종료 */
 		
 		
 		const educationalHistory = document.getElementById("educationalHistory");
@@ -403,7 +474,7 @@
 				
 				/* 한개라도 체크 안되어있을 경우 알람 */
 				if(!check1) {
-					alert("삭제할 항목을 체크해주세요.");
+					alert("삭제할 학력 항목을 체크해주세요.");
 					check1 = false;
 				}
 				
@@ -417,11 +488,12 @@
 					
 					tr2El[0].remove();
 					alert($j(this).val());
+					check2 = true;
 				});
 				
 				/* 한개라도 체크 안되어있을 경우 알람 */
 				if(!check2) {
-					alert("삭제할 항목을 체크해주세요.");
+					alert("삭제할 경력 항목을 체크해주세요.");
 					check2 = false;
 				}
 				
@@ -435,11 +507,12 @@
 					
 					tr3El[0].remove();
 					alert($j(this).val());
+					check3 = true;
 				});
 				
 				/* 한개라도 체크 안되어있을 경우 알람 */
 				if(!check3) {
-					alert("삭제할 항목을 체크해주세요.");
+					alert("삭제할 자격증 항목을 체크해주세요.");
 					check3 = false;
 				}
 				
@@ -677,7 +750,7 @@
 												</select>
 											</td>
 											<td>
-												<input type='text' name='educationVoList[0].schoolName' class='educationSchoolName'/><br/>
+												<input type='text' name='educationVoList[0].schoolName' class='checkKorea educationSchoolName'/><br/>
 												<input type='hidden'/>
 												  <select name='educationVoList[0].location'>
 									             	<option value='서울'>서울</option>
@@ -699,7 +772,7 @@
 										        </select>
 											</td>
 											<td>
-												<input type='text' name='educationVoList[0].major'/>
+												<input type='text' name='educationVoList[0].major' class='checkKorea'/>
 											</td>
 											<td>
 												<input type='text' name='educationVoList[0].grade'/>
@@ -739,7 +812,7 @@
 													</select>
 												</td>
 												<td>
-													<input type='text' name='educationVoList[${status.index}].schoolName' class='educationSchoolName' value='${educationList.schoolName}'>
+													<input type='text' name='educationVoList[${status.index}].schoolName' class='checkKorea educationSchoolName' value='${educationList.schoolName}'>
 													<br/>
 													<input type='hidden' value='${educationList.location}' class='educationLocationText'>
 													  <select name='educationVoList[${status.index}].location' class='educationLocation'>
@@ -762,7 +835,7 @@
 											        </select>
 												</td>
 												<td>
-													<input type='text' name='educationVoList[${status.index}].major' value='${educationList.major}'/>
+													<input type='text' name='educationVoList[${status.index}].major' class='checkKorea' value='${educationList.major}'/>
 												</td>
 												<td>
 													<input type='text' name='educationVoList[${status.index}].grade' value='${educationList.grade}'>
