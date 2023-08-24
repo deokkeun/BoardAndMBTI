@@ -43,4 +43,7 @@ public interface RecruitDao {
 
 	int updateCertificate(CertificateVo certificate) throws Exception;
 
+	int phoneCheck(String phone) throws Exception;
+
+
 }

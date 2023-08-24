@@ -41,24 +41,38 @@ public class RecruitController {
 	public String main(Model model, RecruitVo recruitVo) throws Exception {
 		
 		recruitVo.setName(uni2ksc(recruitVo.getName()));
+		// 로그인 정보 불러오기
 		RecruitVo recruit = recruitService.main(recruitVo); // select
 	
-		if(recruit == null) { // insert
-			int result = recruitService.insertInfo(recruitVo);
-			if(result > 0) { // insert Success(select)
-				recruit = recruitService.main(recruitVo);
-			}
-		} else {
-			if(recruit.getSeq() != null) {
-				List<EducationVo> educationVoList = recruitService.educationVoList(recruit.getSeq()); // select
-				model.addAttribute("educationVoList", educationVoList);
-				List<CareerVo> careerVoList = recruitService.careerVoList(recruit.getSeq()); // select
-				if(careerVoList.size() != 0) {
-					model.addAttribute("careerVoList", careerVoList);
+		// 로그인 정보가 없으면
+		if(recruit == null) {
+			// 핸드폰 번호로 지원 유무 확인
+			int count = recruitService.phoneCheck(recruitVo.getPhone());
+			
+			if(count > 0) { // 지원한적 있으면
+				model.addAttribute("message", "이름을 다시 확인해주세요.");
+				return "recruit/login";
+				
+			} else { // 지원한적 없으면
+				int result = recruitService.insertInfo(recruitVo); // insert
+				if(result > 0) {
+					recruit = recruitService.main(recruitVo); // insert Success(select)
 				}
-				List<CertificateVo> certificateVoList = recruitService.certificateVoList(recruit.getSeq()); // select
-				if(certificateVoList.size() != 0) {
-					model.addAttribute("certificateVoList", certificateVoList);
+			}
+			
+		} else { // 로그인 정보가 있으면
+			if(recruitVo.getName().equals(recruit.getName()) && recruitVo.getPhone().equals(recruit.getPhone())) {
+				if(recruit.getSeq() != null) {
+					List<EducationVo> educationVoList = recruitService.educationVoList(recruit.getSeq()); // select
+					model.addAttribute("educationVoList", educationVoList);
+					List<CareerVo> careerVoList = recruitService.careerVoList(recruit.getSeq()); // select
+					if(careerVoList.size() != 0) {
+						model.addAttribute("careerVoList", careerVoList);
+					}
+					List<CertificateVo> certificateVoList = recruitService.certificateVoList(recruit.getSeq()); // select
+					if(certificateVoList.size() != 0) {
+						model.addAttribute("certificateVoList", certificateVoList);
+					}
 				}
 			}
 		}

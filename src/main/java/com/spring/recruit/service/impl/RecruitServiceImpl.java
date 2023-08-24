@@ -119,6 +119,14 @@ public class RecruitServiceImpl implements RecruitService{
 		// TODO Auto-generated method stub
 		return recruitDao.updateCertificate(certificate);
 	}
+
+	@Override
+	public int phoneCheck(String phone) throws Exception {
+		// TODO Auto-generated method stub
+		return recruitDao.phoneCheck(phone);
+	}
+
+
 	
 	
 }

@@ -9,41 +9,52 @@
 </head>
 <script type="text/javascript">
 		
-	$j(document).ready(function(){
-	});
-/* 	function loginValidate() {
-		alert("클릭");
-	} */
+	$j(document).ready(function(){});
+	
+	function loginValidate() {
+		const name = document.getElementById("name");
+		const phone = document.getElementById("phone");
+		
+		if(name.value.length == 0) {
+			alert("이름을 입력해주세요");
+			name.focus();
+			return false;
+		}
+		if(phone.value.length == 0) {
+			alert("휴대폰번호를 입력해주세요");
+			phone.focus();
+			return false;
+		}
+		
+		return true;
+	}
 	
 </script>
 <body>
-
-
-<!-- <form  action="/recruit/main.do" method="POST" onsubmit="return loginValidate()"> -->
-<form  action="/recruit/main.do" method="POST">
-	<table align="center" border = "1">
-		<tr>
-			<td width="100" align="center">
-				이름
-			</td>
-			<td width="150" align="right">
-				<input type="text" maxlength="15" name="name" id="name"/>
-			</td>
-		</tr>
-		<tr>
-			<td width="100" align="center">
-				휴대폰번호
-			</td>
-			<td width="150" align="right">
-				<input type="text" name="phone" id="phone"/>
-			</td>
-		</tr>
-		<tr>
-			<td width="250" align="center" colspan="2">
-				<button type="submit">입사지원</button>
-			</td>
-		</tr>
-	</table>
-</form>	
+	<form  action="/recruit/main.do" method="POST" onsubmit="return loginValidate()">
+		<table align="center" border = "1">
+			<tr>
+				<td width="100" align="center">
+					이름
+				</td>
+				<td width="150" align="right">
+					<input type="text" maxlength="15" name="name" id="name"/>
+				</td>
+			</tr>
+			<tr>
+				<td width="100" align="center">
+					휴대폰번호
+				</td>
+				<td width="150" align="right">
+					<input type="text" name="phone" id="phone"/>
+				</td>
+			</tr>
+			<tr>
+				<td width="250" align="center" colspan="2">
+					<button type="submit">입사지원</button>
+				</td>
+			</tr>
+		</table>
+	</form>	
 </body>
 </html>

@@ -172,4 +172,11 @@
 		AND CERT_SEQ = #{certSeq}
 	</update>
 	
+    <select id="phoneCheck" parameterType="string" resultType="integer">
+		SELECT COUNT(*)
+		FROM RECRUIT
+		WHERE PHONE = #{phone}
+    </select>
+
+	
 </mapper>

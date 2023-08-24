@@ -119,4 +119,12 @@ public class RecruitDaoImpl implements RecruitDao{
 		// TODO Auto-generated method stub
 		return sqlSession.update("recruit.updateCertificate", certificate);
 	}
+
+	@Override
+	public int phoneCheck(String phone) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSession.selectOne("recruit.phoneCheck", phone);
+	}
+
+
 }
