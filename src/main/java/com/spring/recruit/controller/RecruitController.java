@@ -114,8 +114,8 @@ public class RecruitController {
 			model.addAttribute("recruit", recruit);
 		}
 		
-		// education 테이블
 		int result = 0;
+		// education 테이블
 		if(educationVo.getEducationVoList() != null) {
 			for(EducationVo education : educationVo.getEducationVoList()) {
 				
@@ -123,9 +123,9 @@ public class RecruitController {
 					education.setSeq(recruitVo.getSeq());
 					
 					if(education.getEduSeq() != null) { // update
-						result = recruitService.updateEducation(education);
+						result += recruitService.updateEducation(education);
 					} else { // insert
-						result = recruitService.insertEducation(education);
+						result += recruitService.insertEducation(education);
 					}
 				} 
 			}
@@ -138,12 +138,12 @@ public class RecruitController {
 					career.setSeq(recruitVo.getSeq());
 					
 					if(career.getCarSeq() != null) { // update
-						int careerResult = recruitService.updateCareer(career);
+						result += recruitService.updateCareer(career);
 					} else { // insert
 						if(career.getLocation() == null) {
 							career.setLocation("");
 						}
-						int careerResult = recruitService.insertCareer(career);
+						result += recruitService.insertCareer(career);
 					}
 				}
 			}
@@ -156,9 +156,9 @@ public class RecruitController {
 					certificate.setSeq(recruitVo.getSeq());
 					
 					if(certificate.getCertSeq() != null) { // update
-						int certificateResult = recruitService.updateCertificate(certificate);
+						result += recruitService.updateCertificate(certificate);
 					} else { // insert
-						int certificateResult = recruitService.insertCertificate(certificate);
+						result += recruitService.insertCertificate(certificate);
 					}
 				}
 			}
@@ -170,9 +170,7 @@ public class RecruitController {
 	@RequestMapping(value = "/submit.do", method = RequestMethod.POST)
 	public String submit(RecruitVo recruitVo, Model model) throws Exception {
 		
-		
 		int result = recruitService.submit(recruitVo.getSeq());
-		
 		model.addAttribute("message", "제출 완료!");
 		
 		return "recruit/login";
