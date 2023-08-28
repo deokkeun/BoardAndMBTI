@@ -54,6 +54,7 @@
 		const educationSchoolName = document.getElementsByClassName("educationSchoolName");
 		const major = document.getElementsByClassName("major");
 		const grade = document.getElementsByClassName("grade");
+		
 		var keyEl;
 		for(let key in checkObj) {
 			if(!checkObj[key]) {
@@ -61,11 +62,11 @@
 				switch(key) {
 				case"email": case"addr": case"birth": 
 					if(key == "email") {
-						alert("이메일을 제대로 입력했는지 다시 확인해주세요.");
+						alert("이메일을 입력해주세요.");
 					} else if(key == "addr") {
-						alert("주소가 제대로 입력 되었는지 다시 확인해주세요.");
+						alert("주소를 입력해주세요.");
 					} else if(key == "birth") {
-						alert("생년월일이 제대로 입력 되었는지 다시 확인해주세요.");
+						alert("생년월일을 입력해주세요.");
 					}
 					document.getElementById(key).focus();
 					saveResult = false;
@@ -74,8 +75,6 @@
 				case"educationStartPeriod": case"educationEndPeriod": case"educationSchoolName": case"major": case"grade":
 					keyEl = document.getElementsByClassName(key);
 					for(let i = 0; i < keyEl.length; i++) {
-						console.log(keyEl);
-						console.log(keyEl[i].value);
 						if(keyEl[i].value.length == 0) { /* 입력 안되어 있으면 */
 							if(key == "educationStartPeriod") {
 								alert("재학기간 시작일을 입력해주세요.");
@@ -170,7 +169,7 @@
 		console.log('keydown:' + keyCode);
 	}
 	 
-	/* 기간 입력 유효성 검사 */
+	/* ************************** 기간 입력 유효성 검사 ************************** */
 	function inputDate(obj) {
 		console.log("inputDate 실행");
 		keydownHandler(event);
@@ -192,6 +191,9 @@
     					alert("현재(" + today.getFullYear() + ")보다 미래의 날짜를 입력할 수 없습니다.");
     					obj.value = "";
     				    
+    				} else if(obj.value.substr(0,4) < 1950) {
+    					alert("1950년 이후로 입력 가능합니다.");
+    					obj.value = "";
     				} else {
     					/* 4자리 숫자 입력하면 5번째 . 자동입력 */
     					obj.value = obj.value.substr(0,4) + '.';
@@ -226,14 +228,32 @@
 		    			/* 재학기간, 근무기간 겹치는지 확인 */
 		    			const checkDate = obj.value.substr(0, 4) + obj.value.substr(5, 2);
 		    			
-		    			console.log(obj.className);
 		    			if(obj.className == "dateType educationStartPeriod" || obj.className == "dateType educationEndPeriod") {
+		    				if(obj.className == "dateType educationEndPeriod") { /* 재학기간 종료이면 시작 과 비교 검증 */
+		    					const str = obj.getAttribute("name"); /* 재학기간 종료 name값  */
+		    					const startStr = str.replace("end", "start"); /* 재학기간 시작 name값  */
+		    					const startCheck = document.getElementsByName(startStr)[0]; /* 재학기간 시작 요소 */
+		    					
+		    					/* 재학기간 종료(년도) < 재학기간 시작(년도) */
+		    					if(obj.value.substr(0, 4) < startCheck.value.substr(0, 4)) {
+		    						alert("재학기간 종료일이 시작일 보다 빠를 수 없습니다.");
+		    						obj.value = "";
+		    					} else if(obj.value.substr(0, 4) == startCheck.value.substr(0, 4)) {
+		    						/* 재학기간 종료(달) < 재학기간 시작(달) */
+		    						if(obj.value.substr(5, 2) <= startCheck.value.substr(5, 2)) {
+			    						alert("재학기간 종료일이 시작일 보다 빠를 수 없습니다.");
+			    						obj.value = obj.value.substr(0, 4);
+		    						}
+		    					}
+		    					
+		    				}
+		    				
+		    				/* 재학기간 겹치는지 확인 */
 		    				const educationStartPeriod = document.getElementsByClassName("educationStartPeriod"); /* 재학기간 시작 */
 		    				const educationEndPeriod = document.getElementsByClassName("educationEndPeriod"); /* 재학기간 종료 */
-		    				
 			    			for(let x = 0; x < educationStartPeriod.length; x++) {
 								for(let y = 0; y < educationStartPeriod.length; y++) {
-									if(y != x) { /* 재학기간 겹치는지 확인 */
+									if(y != x) {
 										const startDateCheck = educationStartPeriod[y].value.substr(0, 4) + educationStartPeriod[y].value.substr(5, 2);
 										const endDateCheck = educationEndPeriod[y].value.substr(0, 4) + educationEndPeriod[y].value.substr(5, 2);
 										if(startDateCheck < checkDate && checkDate < endDateCheck) {
@@ -246,12 +266,33 @@
 								}
 			    			}/* 재학기간 겹치는지 확인 종료 */
 			    			
+			    			
 		    			} else if(obj.className == "dateType careerStartPeriod" || obj.className == "dateType careerEndPeriod") {
+		    				if(obj.className == "dateType careerEndPeriod") { /* 근무기간 종료이면 시작 과 비교 검증 */
+		    					const str = obj.getAttribute("name"); /* 근무기간 종료 name값  */
+		    					const startStr = str.replace("end", "start"); /* 근무기간 시작 name값  */
+		    					const startCheck = document.getElementsByName(startStr)[0]; /* 근무기간 시작 요소 */
+		    					
+		    					/* 근무기간 종료(년도) < 근무기간 시작(년도) */
+		    					if(obj.value.substr(0, 4) < startCheck.value.substr(0, 4)) {
+		    						alert("근무기간 종료일이 시작일 보다 빠를 수 없습니다.");
+		    						obj.value = "";
+		    					} else if(obj.value.substr(0, 4) == startCheck.value.substr(0, 4)) {
+		    						/* 근무기간 종료(달) < 근무기간 시작(달) */
+		    						if(obj.value.substr(5, 2) <= startCheck.value.substr(5, 2)) {
+			    						alert("근무기간 종료일이 시작일 보다 빠를 수 없습니다.");
+			    						obj.value = obj.value.substr(0, 4);
+		    						}
+		    					}
+		    					
+		    				}
+		    				
+		    				 /* 근무기간 겹치는지 확인 */
 		    				const careerStartPeriod = document.getElementsByClassName("careerStartPeriod");
 		    				const careerEndPeriod = document.getElementsByClassName("careerEndPeriod");
 		    				for(let x = 0; x < careerStartPeriod.length; x++) {
 								for(let y = 0; y < careerStartPeriod.length; y++) {
-									if(y != x) { /* 근무기간 겹치는지 확인 */
+									if(y != x) {
 										const startDateCheck = careerStartPeriod[y].value.substr(0, 4) + careerStartPeriod[y].value.substr(5, 2);
 										const endDateCheck = careerEndPeriod[y].value.substr(0, 4) + careerStartPeriod[y].value.substr(5, 2);
 										if(startDateCheck < checkDate && checkDate < endDateCheck) {
@@ -269,7 +310,8 @@
 	   			alert("YYYY.MM 형식으로 입력해주세요.");
 			}
 	   	}
-	}; /* 기간 입력 유효성 검사 종료 */
+	}; 
+	/* ************************** 기간 입력 유효성 검사 종료 ************************** */
 	
 	
 	
@@ -387,17 +429,37 @@
 		let educationStartPeriod = document.getElementsByClassName("educationStartPeriod");
 		let educationEndPeriod = document.getElementsByClassName("educationEndPeriod");
 		let educationDivisionText = document.getElementsByClassName("educationDivisionText");
+		
 		if(educationalHistory.innerHTML == "empty") {
 			educationalHistory.innerHTML = "";
+			
 		} else {
 			for(let i = 0; i < educationStartPeriod.length; i++) {
+				const eduStartYear = educationStartPeriod[i].value.substr(0, 4);
+				const eduEndYear = educationEndPeriod[i].value.substr(0, 4);
+				const eduStartMonth = educationStartPeriod[i].value.substr(5, 2);
+				const eduEndMonth = educationEndPeriod[i].value.substr(5, 2);
 				const eduYear = educationEndPeriod[i].value.substr(0, 4) - educationStartPeriod[i].value.substr(0, 4);
 				const eduMonth = educationEndPeriod[i].value.substr(5, 2) - educationStartPeriod[i].value.substr(5, 2);
-
-				if(eduYear > 0) {
-					educationalHistory.innerHTML += educationSchoolName[i].value+"("+eduYear+"년) "+educationDivisionText[i].value + "<br/>";
-				} else {
-					educationalHistory.innerHTML += "학력사항 없음 <br/>";
+				
+				if(eduStartYear < eduEndYear) { /* 시작연도 < 종료연도 */
+					if(eduStartMonth < eduEndMonth) { /* 년도, 개월수 종료일이 더 클때 */
+						educationalHistory.innerHTML += educationSchoolName[i].value+"("+eduYear+"년 " + eduMonth +"개월) "+educationDivisionText[i].value + "<br/>";
+					} else if(eduStartMonth > eduEndMonth) {
+						if((eduEndYear - eduStartYear) == 1) { /* 1년 이내 개월 수 (시작 달 > 종료 달)  */
+							educationalHistory.innerHTML += educationSchoolName[i].value+"("+ (Number(12-eduStartMonth) + Number(eduEndMonth)) +"개월) "+educationDivisionText[i].value + "<br/>";
+						} else { /* 1년 이상 개월 수 (시작 달 > 종료 달) */
+							educationalHistory.innerHTML += educationSchoolName[i].value+"("+ Number(eduYear - 1) +"년 "+ (Number(12-eduStartMonth) + Number(eduEndMonth)) +"개월) "+educationDivisionText[i].value + "<br/>";
+						}
+					} else if(eduStartMonth == eduEndMonth) { /* 1년 이상  (시작 달 == 종료 달)  */
+						educationalHistory.innerHTML += educationSchoolName[i].value+"("+eduYear+"년) "+educationDivisionText[i].value + "<br/>";
+					}
+					
+				} else if(eduStartYear == eduEndYear) { /* 년도 동일 */
+					if(eduStartMonth < eduEndMonth) {
+						educationalHistory.innerHTML += educationSchoolName[i].value+"("+ eduMonth +"개월) "+educationDivisionText[i].value + "<br/>";
+					}
+				
 				}
 			}
 		}
@@ -408,17 +470,33 @@
 			totalCareer.innerHTML = "";
 		} else {
 			for(let i = 0; i < careerStartPeriod.length; i++) {
+				
+				const carStartYear = careerStartPeriod[i].value.substr(0, 4);
+				const carEndYear = careerEndPeriod[i].value.substr(0, 4);
+				const carStartMonth = careerStartPeriod[i].value.substr(5, 2);
+				const carEndMonth = careerEndPeriod[i].value.substr(5, 2);
 				const carYear = careerEndPeriod[i].value.substr(0, 4) - careerStartPeriod[i].value.substr(0, 4);
 				const carMonth = careerEndPeriod[i].value.substr(5, 2) - careerStartPeriod[i].value.substr(5, 2);
-				if(carYear != 0) {
-					totalCareer.innerHTML += "경력 " + carYear + "년 " + carMonth + "개월<br/>";
-				} else {
-					if(carMonth == 0) {
-						totalCareer.innerHTML += "경력 없음 <br/>";
-					} else {
+				
+				if(carStartYear < carEndYear) { /* 시작연도 < 종료연도 */
+					if(carStartMonth < carEndMonth) { /* 년도, 개월수 종료일이 더 클때 */
+						totalCareer.innerHTML += "경력 " + carYear + "년 " + carMonth + "개월<br/>";
+					} else if(carStartMonth > carEndMonth) {
+						if((carEndYear - carStartYear) == 1) { /* 1년 이내 개월 수 (시작 달 > 종료 달)  */
+							totalCareer.innerHTML += "경력 " + (Number(12-carStartMonth) + Number(carEndMonth)) + "개월<br/>";
+						} else { /* 1년 이상 개월 수 (시작 달 > 종료 달) */
+							totalCareer.innerHTML += "경력 " + Number(carYear - 1) + "년 " + (Number(12-carStartMonth) + Number(carEndMonth)) + "개월<br/>";
+						}
+					} else if(carStartMonth == carEndMonth) { /* 1년 이상  (시작 달 == 종료 달)  */
+						totalCareer.innerHTML += "경력 " + carYear + "년<br/>";
+					}
+					
+				} else if(carStartYear == carEndYear) { /* 년도 동일 */
+					if(carStartMonth < carEndMonth) {
 						totalCareer.innerHTML += "경력 " + carMonth + "개월<br/>";
 					}
 				}
+				
 			}
 		}
 		/* 희망연봉 */
