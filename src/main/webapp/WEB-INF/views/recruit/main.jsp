@@ -35,8 +35,8 @@
 	/* 유효성 검사 객체 */
 	const checkObj = {
 		"email"					: false,
-		"addr"					: false,
 		"birth" 				: false,
+		"addr"					: false,
 		"educationStartPeriod"	: false,
 		"educationEndPeriod"	: false,
 		"educationSchoolName"	: false,
@@ -44,29 +44,78 @@
 		"grade"					: false
 	}
 	
+	/* 한개라도 입력 되어있으면 모두 입력, 하나도 입력 안되어있으면 그냥 넘어감 */
+	const checkCareer = {
+		"careerStartPeriod"		: false,
+		"careerEndPeriod"		: false,
+		"careerCompName"		: false,
+		"careerTask"			: false,
+		"careerLocation"		: false
+	}
+	
+	/* 한개라도 입력 되어있으면 모두 입력, 하나도 입력 안되어있으면 그냥 넘어감 */
+	const checkCertificate = {
+		"certificateQualifiName"	: false,
+		"certificateAcquDate"		: false,
+		"certificateOrganizeName"	: false
+	}
+	
+	/* saveAndSubmitValidate(checkObj) 함수 내부에서 호출 */
+	/* 저장 or 제출 전(기간 확인 함수) */
+	function checkPeriod(length, key, i, str) {
+		console.log("length = " + length);
+		console.log("key = " + key);
+		console.log("i = " + i);
+		console.log("str = " + str);
+		
+		if(length == 0) {
+			alert(str + "기간을 입력해주세요.");
+			document.getElementsByClassName(key)[i].focus();
+			saveResult = false;
+			return '1';
+		} else if(length != 7) {
+			alert(str + "기간이 (YYYY.MM)형식에 맞게 입력 되었는지 다시 확인해주세요.");
+			document.getElementsByClassName(key)[i].focus();
+			saveResult = false;
+			return '1';
+		} else {
+			const regExp = /^[\d]{4}[\.]{1}[\d]{2}$/;
+	   		if(regExp.test(document.getElementsByClassName(key)[i].value)) {
+	   		} else {
+	   			alert(str + "기간을 (YYYY.MM)형식에 맞게 입력해주세요.");
+	   			document.getElementsByClassName(key)[i].focus();
+				saveResult = false;
+				return '1';
+	   		}
+		}
+	}
 
-	var saveResult = false;
+
+	var saveResult = false; /* 저장 or 제출 할지 말지 결정 */
 	/* saveAndSubmit */
+	/* 저장 or 제출 전 확인 함수 */
 	function saveAndSubmitValidate(checkObj) {
-		let str;
-		const educationStartPeriod = document.getElementsByClassName("educationStartPeriod");
-		const educationEndPeriod = document.getElementsByClassName("educationEndPeriod");
-		const educationSchoolName = document.getElementsByClassName("educationSchoolName");
-		const major = document.getElementsByClassName("major");
-		const grade = document.getElementsByClassName("grade");
 		
 		var keyEl;
 		for(let key in checkObj) {
 			if(!checkObj[key]) {
 				
 				switch(key) {
-				case"email": case"addr": case"birth": 
+				case"email": case"birth": case"addr": 
 					if(key == "email") {
-						alert("이메일을 입력해주세요.");
+						if(document.getElementById(key).value.length == 0) {
+							alert("이메일을 입력해주세요.");
+						} else {
+							alert("이메일을 test@gmail.com 형식에 맞게 입력해주세요.");
+						}
+					} else if(key == "birth") {
+						if(document.getElementById(key).value.length == 0) {
+							alert("생년월일을 입력해주세요.");
+						} else {
+							alert("생년월일을 YYMMDD 형식에 맞게 입력해주세요.\n (YY = 년, MM = 월(01 ~ 12), DD = 일(01 ~ 31))");
+						}
 					} else if(key == "addr") {
 						alert("주소를 입력해주세요.");
-					} else if(key == "birth") {
-						alert("생년월일을 입력해주세요.");
 					}
 					document.getElementById(key).focus();
 					saveResult = false;
@@ -75,12 +124,21 @@
 				case"educationStartPeriod": case"educationEndPeriod": case"educationSchoolName": case"major": case"grade":
 					keyEl = document.getElementsByClassName(key);
 					for(let i = 0; i < keyEl.length; i++) {
+						
+						/* 함수 실행 */
+						if(key == 'educationStartPeriod' || key == 'educationEndPeriod') {
+							let length = 0;
+							length = keyEl[i].value.length;
+							
+							var result = checkPeriod(length, key, i, "재학");
+							console.log(result);
+							if(result > 0) {
+								return true;
+							}
+						}
+						
 						if(keyEl[i].value.length == 0) { /* 입력 안되어 있으면 */
-							if(key == "educationStartPeriod") {
-								alert("재학기간 시작일을 입력해주세요.");
-							} else if(key == "educationEndPeriod") {
-								alert("재학기간 종료일을 입력해주세요.");
-							} else if(key == "educationSchoolName") {
+							if(key == "educationSchoolName") {
 								alert("학교명을 입력해주세요.");
 							} else if(key == "major") {
 								alert("전공을 입력해주세요.");
@@ -91,13 +149,103 @@
 							document.getElementsByClassName(key)[i].focus();
 							saveResult = false;
 							return true;
-						}
+						} 
 					}; break;
-				
-				
 				}; /* switch */
 			}; /* if(!checkObj[key]) */
 		} /* for(let key in checkObj) */
+		
+		
+		/* 경력테이블 */
+		/* 한개라도 입력 되어있으면 모두 입력, 하나도 입력 안되어있으면 그냥 넘어감 */
+		let count = 0;
+		const careerStartPeriod = document.getElementsByClassName("careerStartPeriod");
+		for(let i = 0; i < careerStartPeriod.length; i++) {
+			
+			count = 0;
+			for(let key in checkCareer) { /* 입력된게 1개라도 있는지 확인 */
+				count += document.getElementsByClassName(key)[i].value.length;
+			}
+			
+			if(count > 0) {
+				console.log("career 입력된 내용이 있음");
+				
+				for(let key in checkCareer) {
+					let length = 0;
+					length = document.getElementsByClassName(key)[i].value.length;
+
+					if(key == 'careerStartPeriod' || key == 'careerEndPeriod') {
+						var result = checkPeriod(length, key, i, "근무");
+						console.log(result);
+						if(result > 0) {
+							return true;
+						}
+					}
+					
+					if(length == 0) {
+						if(key == "careerCompName") {
+							alert("회사명을 입력해주세요.");
+						} else if(key == "careerTask") {
+							alert("부서/직급/직책을 입력해주세요.");
+						} else if(key == "careerLocation") {
+							alert("지역을 입력해주세요.");
+						}
+						
+						document.getElementsByClassName(key)[i].focus();
+						saveResult = false;
+						return true;
+					}
+				}
+			} else {
+				console.log("career 입력된 내용이 없음");
+			}
+		}/* 경력테이블 끝 */
+		
+		
+		
+		/* 자격증테이블 */
+		/* 한개라도 입력 되어있으면 모두 입력, 하나도 입력 안되어있으면 그냥 넘어감 */
+		let count1 = 0;
+		const certificateQualifiName = document.getElementsByClassName("certificateQualifiName");
+		for(let i = 0; i < certificateQualifiName.length; i++) {
+			
+			count1 = 0;
+			for(let key in checkCertificate) { /* 입력된게 1개라도 있는지 확인 */
+				count1 += document.getElementsByClassName(key)[i].value.length;
+			}
+			
+			if(count1 > 0) {
+				console.log("certificate 입력된 내용이 있음");
+				
+				for(let key in checkCertificate) {
+					let length = 0;
+					length = document.getElementsByClassName(key)[i].value.length;
+					
+					if(key == 'certificateAcquDate') {
+						var result = checkPeriod(length, key, i, "취득");
+						console.log(result);
+						if(result > 0) {
+							return true;
+						}
+					}
+					
+					if(length == 0) {
+						if(key == "certificateQualifiName") {
+							alert("자격증명을 입력해주세요.");
+						} else if(key == "certificateOrganizeName") {
+							alert("발행처를 입력해주세요.");
+						}
+						
+						document.getElementsByClassName(key)[i].focus();
+						saveResult = false;
+						return true;
+					}
+				}
+			} else {
+				console.log("certificate 입력된 내용이 없음");
+			}
+		}/* 자격증테이블 끝 */
+		
 		saveResult = true;
 	}
 
@@ -105,7 +253,10 @@
 	/* 제출전 확인 */
 	function recruitValidate() {
 		if(confirm("제출하시면 수정이 되지 않습니다.")) {
-			return true;
+			saveAndSubmitValidate(checkObj);
+			if (saveResult == true) {
+				return true;
+			}
 		}
 			return false;
 	}
@@ -221,7 +372,7 @@
 	   		if(regExp.test(obj.value)) {
 		    		console.log(obj.value.substr(5,2));
 		    		if(01 > obj.value.substr(5,2) || obj.value.substr(5,2) > 12) {
-		    			obj.value = obj.value.substr(0,5) + "01";
+		    			obj.value = obj.value.substr(0,5);
 		    			alert("01월 ~ 12월 사이로 입력해주세요.");
 		    		} else {
 		    			
@@ -240,8 +391,12 @@
 		    						obj.value = "";
 		    					} else if(obj.value.substr(0, 4) == startCheck.value.substr(0, 4)) {
 		    						/* 재학기간 종료(달) < 재학기간 시작(달) */
-		    						if(obj.value.substr(5, 2) <= startCheck.value.substr(5, 2)) {
+		    						if(obj.value.substr(5, 2) < startCheck.value.substr(5, 2)) {
 			    						alert("재학기간 종료일이 시작일 보다 빠를 수 없습니다.");
+			    						obj.value = obj.value.substr(0, 4);
+		    						/* 재학기간 종료(달) == 재학기간 시작(달) */
+		    						} else if(obj.value.substr(5, 2) == startCheck.value.substr(5, 2)) {
+		    							alert("재학기간이 같을 수 없습니다.");
 			    						obj.value = obj.value.substr(0, 4);
 		    						}
 		    					}
@@ -284,7 +439,6 @@
 			    						obj.value = obj.value.substr(0, 4);
 		    						}
 		    					}
-		    					
 		    				}
 		    				
 		    				 /* 근무기간 겹치는지 확인 */
@@ -398,7 +552,7 @@
 		$j(".checkNumberDot").on("input", e => {
 			checkNumberDotCode(e);
 		});
-		/* ----------------------------------------- 유효성 검사 ----------------------------------------- */
+		/* ----------------------------------------- 유효성 검사 끝 ----------------------------------------- */
 		
 		
 		
@@ -415,7 +569,7 @@
 		if(workType != "") {
 			$j("#workType").val(workType).prop("selected", true);
 		}
-		/* ----------------------------------------- Select(성별, 희망근무지, 근무형태) ----------------------------------------- */
+		/* ----------------------------------------- Select(성별, 희망근무지, 근무형태) 끝 ----------------------------------------- */
 		
 
 		
@@ -505,7 +659,7 @@
 		} else {
 			locationAndWorkType.innerHTML = $j("#location").val() + "전체 <br/>" + $j("#workType").val();
 		}
-		/* ----------------------------------------- 학력사항, 경력사항, 희망근무지/근무형태-----------------------------------------  */
+		/* ----------------------------------------- 학력사항, 경력사항, 희망근무지/근무형태 끝 -----------------------------------------  */
 		
 		
 		/* 저장한 한적이 있으면 */
@@ -726,7 +880,6 @@
 				
 			}
 			
-			
 			const table1 = document.getElementById("table1");
 			const table2 = document.getElementById("table2");
 			const table3 = document.getElementById("table3");
@@ -747,12 +900,7 @@
 		/* 저장 */
 		$j("#save").on("click",function(){
 			
-			console.log(checkObj.email);
-			console.log(checkObj.addr);
-			console.log(checkObj.birth);
-			
 			saveAndSubmitValidate(checkObj);
-			console.log("saveResult"+saveResult);
 			
 			if (saveResult == true) {
 				const deleteNo1 = document.getElementById("deleteNo1");
@@ -777,7 +925,6 @@
 						alert("저장 완료");
 						window.location.reload();
 						/* window.location.href = "/recruit/main.do"; */
-						
 				    },
 				    error: function (jqXHR, textStatus, errorThrown)
 				    {
@@ -786,7 +933,6 @@
 				});
 			}
 		}); /* 저장 */
-	
 		
 	}); /* $j(document).ready(function() */
 
@@ -1102,14 +1248,14 @@
 												<input type='text' name='careerVoList[0].endPeriod' class='dateType careerEndPeriod' onkeyup='inputDate(this)' maxlength='7' placeholder='YYYY.MM' />
 											</td>
 											<td><!-- 회사명 -->
-												<input type='text'  name='careerVoList[0].compName'/>
+												<input type='text'  name='careerVoList[0].compName' class='careerCompName'/>
 											</td>
 											<td><!-- 부서/직급/직책 -->
-												<input type='text' name='careerVoList[0].task'/>
-												<input type='hidden' name='careerVoList[0].salary'/>
+												<input type='text' name='careerVoList[0].task' class='careerTask'/>
+												<input type='hidden' name='careerVoList[0].salary' class='careerSalary'/>
 											</td>
 											<td><!-- 지역 -->
-												<input type='text' name='careerVoList[0].location'/>
+												<input type='text' name='careerVoList[0].location' class='careerLocation'/>
 											</td>
 										</tr>
 									</tbody>
@@ -1136,14 +1282,14 @@
 													<input type="text" name="careerVoList[${status.index}].endPeriod" class='dateType careerEndPeriod' onkeyup='inputDate(this)' maxlength='7' placeholder='YYYY.MM' value="${careerList.endPeriod}"/>
 												</td>
 												<td><!-- 회사명 -->
-													<input type="text"  name="careerVoList[${status.index}].compName" value="${careerList.compName}"/>
+													<input type="text"  name="careerVoList[${status.index}].compName" class='careerCompName' value="${careerList.compName}"/>
 												</td>
 												<td><!-- 부서/직급/직책 -->
-													<input type="text" name="careerVoList[${status.index}].task" value="${careerList.task}"/>
-													<input type="hidden" name="careerVoList[${status.index}].salary" value="${careerList.salary}"/>
+													<input type="text" name="careerVoList[${status.index}].task" class='careerTask' value="${careerList.task}"/>
+													<input type="hidden" name="careerVoList[${status.index}].salary"  class='careerSalary' value="${careerList.salary}"/>
 												</td>
 												<td><!-- 지역 -->
-													<input type="text" name="careerVoList[${status.index}].location" value="${careerList.location}"/>
+													<input type="text" name="careerVoList[${status.index}].location" class='careerLocation' value="${careerList.location}"/>
 												</td>
 											</tr>
 										</c:forEach>
@@ -1186,13 +1332,13 @@
 												<input type='checkBox' name='tr3CheckBox' class='tr3CheckBox' value='0'/>
 											</td>
 											<td><!-- 자격증명 -->
-												<input type='text' name='certificateVoList[0].qualifiName'/>
+												<input type='text' name='certificateVoList[0].qualifiName' class='certificateQualifiName'/>
 											</td>
 											<td><!-- 취득일 -->
-												<input type='text' name='certificateVoList[0].acquDate' maxlength='7' onkeyup='inputDate(this)' placeholder='YYYY.MM'/>
+												<input type='text' name='certificateVoList[0].acquDate' class='certificateAcquDate' maxlength='7' onkeyup='inputDate(this)' placeholder='YYYY.MM'/>
 											</td>
 											<td><!-- 발행처 -->
-												<input type='text' name='certificateVoList[0].organizeName'/><br/>
+												<input type='text' name='certificateVoList[0].organizeName' class='certificateOrganizeName'/><br/>
 											</td>
 										</tr>
 									</tbody>
@@ -1214,13 +1360,13 @@
 													<input type="checkBox" name="tr3CheckBox" class="tr3CheckBox" value="${status.index}"/>
 												</td>
 												<td><!-- 자격증명 -->
-													<input type="text" name="certificateVoList[${status.index}].qualifiName" value="${certificateList.qualifiName}"/>
+													<input type="text" name="certificateVoList[${status.index}].qualifiName" class='certificateQualifiName' value="${certificateList.qualifiName}"/>
 												</td>
 												<td><!-- 취득일 -->
-													<input type="text" name="certificateVoList[${status.index}].acquDate" class="dateType" onkeyup='inputDate(this)' maxlength='7' placeholder='YYYY.MM' value="${certificateList.acquDate}"/>
+													<input type="text" name="certificateVoList[${status.index}].acquDate" class="dateType certificateAcquDate" onkeyup='inputDate(this)' maxlength='7' placeholder='YYYY.MM' value="${certificateList.acquDate}"/>
 												</td>
 												<td><!-- 발행처 -->
-													<input type="text" name="certificateVoList[${status.index}].organizeName" value="${certificateList.organizeName}"/><br/>
+													<input type="text" name="certificateVoList[${status.index}].organizeName" class='certificateOrganizeName' value="${certificateList.organizeName}"/><br/>
 												</td>
 											</tr>
 										</c:forEach>
