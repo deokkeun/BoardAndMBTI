@@ -112,7 +112,7 @@
 						if(document.getElementById(key).value.length == 0) {
 							alert("생년월일을 입력해주세요.");
 						} else {
-							alert("생년월일을 YYMMDD 형식에 맞게 입력해주세요.\n (YY = 년, MM = 월(01 ~ 12), DD = 일(01 ~ 31))");
+							alert("생년월일을 YYMMDD 형식에 맞게 입력해주세요.\n 20년 01월 01일 \n ex) 200101");
 						}
 					} else if(key == "addr") {
 						alert("주소를 입력해주세요.");
@@ -127,6 +127,23 @@
 						
 						/* 함수 실행 */
 						if(key == 'educationStartPeriod' || key == 'educationEndPeriod') {
+							
+							/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 테스트 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+							const str = keyEl[i].getAttribute("name"); /* 재학기간 시작 or 종료 name값  */
+	    					
+		    				if(keyEl[i].className == "dateType educationStartPeriod") {
+		    					const endStr = str.replace("start", "end"); /* 재학기간 종료 name값  */
+		    					const endCheck = document.getElementsByName(endStr)[0]; /* 재학기간 종료 요소 */
+		    					inputDateCheck(keyEl[i], endCheck, "start");
+		    				
+		    				} else if(keyEl[i].className == "dateType educationEndPeriod") { /* 재학기간 종료이면 시작 과 비교 검증 */
+		    					const startStr = str.replace("end", "start"); /* 재학기간 시작 name값  */
+		    					const startCheck = document.getElementsByName(startStr)[0]; /* 재학기간 시작 요소 */
+		    					inputDateCheck(keyEl[i], startCheck, "end");
+		    				}/* @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 테스트 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ */
+		    				
+							
+							
 							let length = 0;
 							length = keyEl[i].value.length;
 							
@@ -319,6 +336,45 @@
 		keyCode = event.keyCode || event.which;
 		console.log('keydown:' + keyCode);
 	}
+	
+	/* ************************** 기간 입력 유효성 검사 check ************************** */
+	function inputDateCheck(obj, objCheck, str) {
+		if(str == 'start') {
+			/* 시작연도 > 종료연도 */
+			if(obj.value.substr(0, 4) > objCheck.value.substr(0, 4)) {
+				alert("시작일이 종료일보다 이 후 일수는 없습니다.\n다시 입력하여 주시기 바랍니다.");
+				obj.value = "";
+			} else if(obj.value.substr(0, 4) == objCheck.value.substr(0, 4)) {
+				/* 시작 달 > 종료 달 */
+				if(obj.value.substr(5, 2) > objCheck.value.substr(5, 2)) {
+					alert("시작일이 종료일보다 이 후 일수는 없습니다.");
+					obj.value = obj.value.substr(0, 4);
+				/* 시작 달 == 종료 달 */
+				} else if(obj.value.substr(5, 2) == objCheck.value.substr(5, 2)) {
+					alert("시작일과 종료일이 같을 수 없습니다.");
+					obj.value = obj.value.substr(0, 4);
+				}
+			}
+		} else if(str == 'end') {
+			/* 종료연도 < 시작연도 */
+			if(obj.value.substr(0, 4) < objCheck.value.substr(0, 4)) {
+				alert("종료일이 시작일보다 이 전 일수는 없습니다.\n다시 입력하여 주시기 바랍니다.");
+				obj.value = "";
+			} else if(obj.value.substr(0, 4) == objCheck.value.substr(0, 4)) {
+				/* 종료 달 < 시작 달 */
+				if(obj.value.substr(5, 2) < objCheck.value.substr(5, 2)) {
+					alert("종료일이 시작일보다 이 전 일수는 없습니다.");
+					obj.value = obj.value.substr(0, 4);
+				/* 종료 달 == 시작 달 */
+				} else if(obj.value.substr(5, 2) == objCheck.value.substr(5, 2)) {
+					alert("시작일과 종료일이 같을 수 없습니다.");
+					obj.value = obj.value.substr(0, 4);
+				}
+			}
+		}
+		
+		
+	}
 	 
 	/* ************************** 기간 입력 유효성 검사 ************************** */
 	function inputDate(obj) {
@@ -380,28 +436,7 @@
 		    			const checkDate = obj.value.substr(0, 4) + obj.value.substr(5, 2);
 		    			
 		    			if(obj.className == "dateType educationStartPeriod" || obj.className == "dateType educationEndPeriod") {
-		    				if(obj.className == "dateType educationEndPeriod") { /* 재학기간 종료이면 시작 과 비교 검증 */
-		    					const str = obj.getAttribute("name"); /* 재학기간 종료 name값  */
-		    					const startStr = str.replace("end", "start"); /* 재학기간 시작 name값  */
-		    					const startCheck = document.getElementsByName(startStr)[0]; /* 재학기간 시작 요소 */
-		    					
-		    					/* 재학기간 종료(년도) < 재학기간 시작(년도) */
-		    					if(obj.value.substr(0, 4) < startCheck.value.substr(0, 4)) {
-		    						alert("재학기간 종료일이 시작일 보다 빠를 수 없습니다.");
-		    						obj.value = "";
-		    					} else if(obj.value.substr(0, 4) == startCheck.value.substr(0, 4)) {
-		    						/* 재학기간 종료(달) < 재학기간 시작(달) */
-		    						if(obj.value.substr(5, 2) < startCheck.value.substr(5, 2)) {
-			    						alert("재학기간 종료일이 시작일 보다 빠를 수 없습니다.");
-			    						obj.value = obj.value.substr(0, 4);
-		    						/* 재학기간 종료(달) == 재학기간 시작(달) */
-		    						} else if(obj.value.substr(5, 2) == startCheck.value.substr(5, 2)) {
-		    							alert("재학기간이 같을 수 없습니다.");
-			    						obj.value = obj.value.substr(0, 4);
-		    						}
-		    					}
-		    					
-		    				}
+	    				
 		    				
 		    				/* 재학기간 겹치는지 확인 */
 		    				const educationStartPeriod = document.getElementsByClassName("educationStartPeriod"); /* 재학기간 시작 */
@@ -423,22 +458,17 @@
 			    			
 			    			
 		    			} else if(obj.className == "dateType careerStartPeriod" || obj.className == "dateType careerEndPeriod") {
-		    				if(obj.className == "dateType careerEndPeriod") { /* 근무기간 종료이면 시작 과 비교 검증 */
-		    					const str = obj.getAttribute("name"); /* 근무기간 종료 name값  */
+		    				const str = obj.getAttribute("name"); /* 근무기간 시작 or 종료 name값  */
+		    				
+		    				if(obj.className == "dateType careerStartPeriod") {
+		    					const endStr = str.replace("start", "end"); /* 근무기간 종료 name값  */
+		    					const endCheck = document.getElementsByName(endStr)[0]; /* 근무기간 종료 요소 */
+		    					inputDateCheck(obj, endCheck, "start");
+		    					
+		    				} else if(obj.className == "dateType careerEndPeriod") { /* 근무기간 종료이면 시작 과 비교 검증 */
 		    					const startStr = str.replace("end", "start"); /* 근무기간 시작 name값  */
 		    					const startCheck = document.getElementsByName(startStr)[0]; /* 근무기간 시작 요소 */
-		    					
-		    					/* 근무기간 종료(년도) < 근무기간 시작(년도) */
-		    					if(obj.value.substr(0, 4) < startCheck.value.substr(0, 4)) {
-		    						alert("근무기간 종료일이 시작일 보다 빠를 수 없습니다.");
-		    						obj.value = "";
-		    					} else if(obj.value.substr(0, 4) == startCheck.value.substr(0, 4)) {
-		    						/* 근무기간 종료(달) < 근무기간 시작(달) */
-		    						if(obj.value.substr(5, 2) <= startCheck.value.substr(5, 2)) {
-			    						alert("근무기간 종료일이 시작일 보다 빠를 수 없습니다.");
-			    						obj.value = obj.value.substr(0, 4);
-		    						}
-		    					}
+		    					inputDateCheck(obj, startCheck, "end");
 		    				}
 		    				
 		    				 /* 근무기간 겹치는지 확인 */
@@ -544,10 +574,6 @@
 			}
 		});
 
-		/* 한글만 입력 (영어, 숫자 입력 방지) */
-		$j(".checkKorea").on("input", e => {
-			checkKoreaCode(e);
-		});
 		/* 숫자, "."만 입력 */
 		$j(".checkNumberDot").on("input", e => {
 			checkNumberDotCode(e);
@@ -613,7 +639,6 @@
 					if(eduStartMonth < eduEndMonth) {
 						educationalHistory.innerHTML += educationSchoolName[i].value+"("+ eduMonth +"개월) "+educationDivisionText[i].value + "<br/>";
 					}
-				
 				}
 			}
 		}
@@ -732,7 +757,7 @@
 		$j(".plusBtn").on("click", function() {
 			if($j(this).val() == "tr1PlusBtn") {
 				if(tr1[0] == null) {
-					table1.innerHTML = "<thead><tr><th></th><th>재학기간</th><th>구분</th><th>학교명(소재지)</th><th>전공</th><th>학점</th></tr></thead><tbody><tr class='tr1 tr1Clone0'><td><input type='hidden'id='eduSeq'value=''/><input type='checkBox'name='tr1CheckBox'class='tr1CheckBox'value='0'/></td><td><input type='text'name='educationVoList[0].startPeriod'class='dateType educationStartPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/><br/>~<br/><input type='text'name='educationVoList[0].endPeriod'class='dateType educationEndPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/></td><td><input type='hidden'/><select name='educationVoList[0].division'class='educationDivision'><option value='재학'>재학</option><option value='중퇴'>중퇴</option><option value='졸업'>졸업</option></select></td><td><input type='text'name='educationVoList[0].schoolName'class='checkKorea educationSchoolName'/><br/><input type='hidden'/><select name='educationVoList[0].location'><option value='서울'>서울</option><option value='부산'>부산</option><option value='대구'>대구</option><option value='인천'>인천</option><option value='광주'>광주</option><option value='대전'>대전</option><option value='울산'>울산</option><option value='강원'>강원</option><option value='경기'>경기</option><option value='경남'>경남</option><option value='경북'>경북</option><option value='전남'>전남</option><option value='전북'>전북</option><option value='제주'>제주</option><option value='충남'>충남</option><option value='충북'>충북</option></select></td><td><input type='text'name='educationVoList[0].major'class='checkKorea major'/></td><td><input type='text'name='educationVoList[0].grade'class='grade'/></td></tr></tbody>";
+					table1.innerHTML = "<thead><tr><th></th><th>재학기간</th><th>구분</th><th>학교명(소재지)</th><th>전공</th><th>학점</th></tr></thead><tbody><tr class='tr1 tr1Clone0'><td><input type='hidden'id='eduSeq'value=''/><input type='checkBox'name='tr1CheckBox'class='tr1CheckBox'value='0'/></td><td><input type='text'name='educationVoList[0].startPeriod'class='dateType educationStartPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/><br/>~<br/><input type='text'name='educationVoList[0].endPeriod'class='dateType educationEndPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/></td><td><input type='hidden'/><select name='educationVoList[0].division'class='educationDivision'><option value='재학'>재학</option><option value='중퇴'>중퇴</option><option value='졸업'>졸업</option></select></td><td><input type='text'name='educationVoList[0].schoolName'class='educationSchoolName'/><br/><input type='hidden'/><select name='educationVoList[0].location'><option value='서울'>서울</option><option value='부산'>부산</option><option value='대구'>대구</option><option value='인천'>인천</option><option value='광주'>광주</option><option value='대전'>대전</option><option value='울산'>울산</option><option value='강원'>강원</option><option value='경기'>경기</option><option value='경남'>경남</option><option value='경북'>경북</option><option value='전남'>전남</option><option value='전북'>전북</option><option value='제주'>제주</option><option value='충남'>충남</option><option value='충북'>충북</option></select></td><td><input type='text'name='educationVoList[0].major'class='major'/></td><td><input type='text'name='educationVoList[0].grade'class='grade checkNumberDot'maxlength='3'/></td></tr></tbody>";
 					table1.style.border = "1px solid black";
 					return true;
 				}
@@ -761,7 +786,7 @@
 				tr1[tr1.length - 1].after(tr1Clone);
 			} else if($j(this).val() == "tr2PlusBtn") {
 				if(tr2[0] == null) {
-					table2.innerHTML = "<thead><tr><th></th><th>근무기간</th><th>회사명</th><th>부서/직급/직책</th><th>지역</th></tr></thead><tbody><tr class='tr2 tr2Clone0'><td><!--체크박스--><input type='hidden'id='carSeq'value=''/><input type='checkBox'name='tr2CheckBox'class='tr2CheckBox'value='0'/></td><td><!--근무기간--><input type='text'name='careerVoList[0].startPeriod'class='dateType careerStartPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/>~<br/><input type='text'name='careerVoList[0].endPeriod'class='dateType careerEndPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/></td><td><!--회사명--><input type='text'name='careerVoList[0].compName'/></td><td><!--부서/직급/직책--><input type='text'name='careerVoList[0].task'/><input type='hidden'name='careerVoList[0].salary'/></td><td><!--지역--><input type='text'name='careerVoList[0].location'/></td></tr></tbody>";
+					table2.innerHTML = "<thead><tr><th></th><th>근무기간</th><th>회사명</th><th>부서/직급/직책</th><th>지역</th></tr></thead><tbody><tr class='tr2 tr2Clone0'><td><!--체크박스--><input type='hidden'id='carSeq'value=''/><input type='checkBox'name='tr2CheckBox'class='tr2CheckBox'value='0'/></td><td><!--근무기간--><input type='text'name='careerVoList[0].startPeriod'class='dateType careerStartPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/>~<br/><input type='text'name='careerVoList[0].endPeriod'class='dateType careerEndPeriod'onkeyup='inputDate(this)'maxlength='7'placeholder='YYYY.MM'/></td><td><!--회사명--><input type='text'name='careerVoList[0].compName'class='careerCompName'/></td><td><!--부서/직급/직책--><input type='text'name='careerVoList[0].task'class='careerTask'/><input type='hidden'name='careerVoList[0].salary'class='careerSalary'/></td><td><!--지역--><input type='text'name='careerVoList[0].location'class='careerLocation'/></td></tr></tbody>";
 					table2.style.border = "1px solid black";
 					return true;
 				}
@@ -789,7 +814,7 @@
 				
 			} else if($j(this).val() == "tr3PlusBtn") {
 				if(tr3[0] == null) {
-					table3.innerHTML = "<thead><tr><th></th><th>자격증명</th><th>취득일</th><th>발행처</th></tr></thead><tbody><tr class='tr3 tr3Clone0'><td><!--체크박스--><input type='hidden'id='certSeq'value=''/><input type='checkBox'name='tr3CheckBox'class='tr3CheckBox'value='0'/></td><td><!--자격증명--><input type='text'name='certificateVoList[0].qualifiName'/></td><td><!--취득일--><input type='text'name='certificateVoList[0].acquDate'maxlength='7'onkeyup='inputDate(this)'placeholder='YYYY.MM'/></td><td><!--발행처--><input type='text'name='certificateVoList[0].organizeName'/><br/></td></tr></tbody>";
+					table3.innerHTML = "<thead><tr><th></th><th>자격증명</th><th>취득일</th><th>발행처</th></tr></thead><tbody><tr class='tr3 tr3Clone0'><td><!--체크박스--><input type='hidden'id='certSeq'value=''/><input type='checkBox'name='tr3CheckBox'class='tr3CheckBox'value='0'/></td><td><!--자격증명--><input type='text'name='certificateVoList[0].qualifiName'class='certificateQualifiName'/></td><td><!--취득일--><input type='text'name='certificateVoList[0].acquDate'class='certificateAcquDate'maxlength='7'onkeyup='inputDate(this)'placeholder='YYYY.MM'/></td><td><!--발행처--><input type='text'name='certificateVoList[0].organizeName'class='certificateOrganizeName'/><br/></td></tr></tbody>";
 					table3.style.border = "1px solid black";
 					return true;
 				}
@@ -1113,7 +1138,7 @@
 												</select>
 											</td>
 											<td>
-												<input type='text' name='educationVoList[0].schoolName' class='checkKorea educationSchoolName'/><br/>
+												<input type='text' name='educationVoList[0].schoolName' class='educationSchoolName'/><br/>
 												<input type='hidden'/>
 												  <select name='educationVoList[0].location'>
 									             	<option value='서울'>서울</option>
@@ -1135,7 +1160,7 @@
 										        </select>
 											</td>
 											<td>
-												<input type='text' name='educationVoList[0].major' class='checkKorea major'/>
+												<input type='text' name='educationVoList[0].major' class='major'/>
 											</td>
 											<td>
 												<input type='text' name='educationVoList[0].grade' class='grade checkNumberDot' maxlength='3'/>
@@ -1175,7 +1200,7 @@
 													</select>
 												</td>
 												<td>
-													<input type='text' name='educationVoList[${status.index}].schoolName' class='checkKorea educationSchoolName' value='${educationList.schoolName}'>
+													<input type='text' name='educationVoList[${status.index}].schoolName' class='educationSchoolName' value='${educationList.schoolName}'>
 													<br/>
 													<input type='hidden' value='${educationList.location}' class='educationLocationText'>
 													  <select name='educationVoList[${status.index}].location' class='educationLocation'>
@@ -1198,7 +1223,7 @@
 											        </select>
 												</td>
 												<td>
-													<input type='text' name='educationVoList[${status.index}].major' class='checkKorea major' value='${educationList.major}'/>
+													<input type='text' name='educationVoList[${status.index}].major' class='major' value='${educationList.major}'/>
 												</td>
 												<td>
 													<input type='text' name='educationVoList[${status.index}].grade' class='grade checkNumberDot' maxlength='3' value='${educationList.grade}'/>
